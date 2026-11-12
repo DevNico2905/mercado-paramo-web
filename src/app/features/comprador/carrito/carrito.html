@@ -1,0 +1,241 @@
+@if (pedidoConfirmado(); as pedido) {
+  <section class="mx-auto max-w-2xl py-2 sm:py-6" aria-labelledby="confirmacion-pedido">
+    <div class="text-center motion-safe:animate-aparecer">
+      <div class="relative mx-auto flex size-28 items-center justify-center" aria-hidden="true">
+        <span
+          class="absolute inset-0 rotate-6 rounded-[40%_60%_55%_45%/50%_45%_55%_50%] bg-frailejon-400/40"
+        ></span>
+        <span
+          class="absolute inset-2 -rotate-6 rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-frailejon-100"
+        ></span>
+        <span class="relative text-6xl motion-safe:animate-flotar">🎉</span>
+      </div>
+      <p class="mt-5 text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">
+        Pedido n.º {{ pedido.id }}
+      </p>
+      <h1 id="confirmacion-pedido" class="mt-2 text-4xl font-semibold sm:text-5xl">
+        ¡Pedido confirmado!
+      </h1>
+      <p class="mx-auto mt-3 max-w-md text-lg">
+        {{ pedido.productorNombre }} ya lo recibió y lo revisará pronto. Pagas cuando te lo
+        entreguen.
+      </p>
+    </div>
+
+    <app-impact-meter
+      class="mt-8 motion-safe:animate-aparecer motion-safe:[animation-delay:120ms]"
+      [total]="pedido.total"
+      [montoProductor]="pedido.montoProductor"
+      [porcentaje]="participacionConfirmada()"
+      [productor]="pedido.productorNombre"
+      [vereda]="pedido.vereda"
+    />
+
+    <div
+      class="mt-5 rounded-2xl bg-white p-5 shadow-suave motion-safe:animate-aparecer motion-safe:[animation-delay:200ms] sm:p-6"
+    >
+      <dl class="flex flex-col gap-2 text-sm">
+        <div class="flex justify-between gap-4">
+          <dt>Total del pedido</dt>
+          <dd class="font-semibold">{{ pedido.total | cop }}</dd>
+        </div>
+        <div class="flex justify-between gap-4">
+          <dt>Comisión de la plataforma</dt>
+          <dd class="font-semibold">{{ pedido.comision | cop }}</dd>
+        </div>
+        <div
+          class="flex justify-between gap-4 border-t border-musgo-900/10 pt-2 text-base text-musgo-900"
+        >
+          <dt class="font-semibold">Recibe {{ pedido.productorNombre }}</dt>
+          <dd class="font-display text-xl font-semibold">{{ pedido.montoProductor | cop }}</dd>
+        </div>
+      </dl>
+      <app-order-timeline class="mt-6" [estado]="pedido.estado" />
+    </div>
+
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <a
+        routerLink="/mis-pedidos"
+        class="flex min-h-12 items-center justify-center rounded-xl bg-musgo-700 px-6 font-semibold text-white hover:bg-musgo-900"
+      >
+        Ver mis pedidos
+      </a>
+      <a
+        routerLink="/"
+        class="flex min-h-12 items-center justify-center rounded-xl px-6 font-semibold text-musgo-900 ring-1 ring-musgo-900/20 ring-inset hover:bg-musgo-100"
+      >
+        Seguir comprando
+      </a>
+    </div>
+  </section>
+} @else if (cart.estaVacio()) {
+  <app-empty-state
+    emoji="🧺"
+    titulo="Tu carrito está vacío"
+    mensaje="Elige productos frescos del páramo y arma tu pedido."
+  >
+    <a
+      routerLink="/"
+      class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+    >
+      Explorar el catálogo →
+    </a>
+  </app-empty-state>
+} @else {
+  @let carrito = cart.carrito();
+  <header class="motion-safe:animate-aparecer">
+    <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Tu carrito</p>
+    <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">
+      Tu pedido a <em class="text-musgo-700">{{ primerNombre() }}</em>
+    </h1>
+    <p class="mt-1 text-roca-900/80">{{ carrito.productorNombre }} · vereda {{ carrito.vereda }}</p>
+  </header>
+
+  <div class="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+    <ul class="flex flex-col gap-3" aria-label="Productos del pedido">
+      @for (item of carrito.items; track item.productoId) {
+        <li class="flex gap-3 rounded-2xl bg-white p-3 shadow-suave sm:gap-4 sm:p-4">
+          <div class="size-16 shrink-0 overflow-hidden rounded-xl sm:size-20">
+            <app-category-art
+              class="size-full"
+              tamano="miniatura"
+              [categoria]="item.categoriaNombre"
+            />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h2 class="text-lg leading-tight font-semibold break-words">
+                  <a [routerLink]="['/productos', item.productoId]" class="hover:underline">
+                    {{ item.nombre }}
+                  </a>
+                </h2>
+                <p class="text-sm text-roca-900/80">{{ item.precio | cop }} / {{ item.unidad }}</p>
+              </div>
+              <button
+                type="button"
+                class="-mt-1 -mr-1 flex size-11 shrink-0 items-center justify-center rounded-full text-roca-900/70 hover:bg-peligro-600/10 hover:text-peligro-600"
+                [attr.aria-label]="'Quitar ' + item.nombre + ' del carrito'"
+                (click)="cart.quitar(item.productoId)"
+              >
+                <svg lucideTrash2 [size]="20" aria-hidden="true"></svg>
+              </button>
+            </div>
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <app-quantity-stepper
+                [cantidad]="item.cantidad"
+                [maximo]="item.stock"
+                [etiqueta]="'Cantidad de ' + item.nombre"
+                (cambio)="cart.cambiarCantidad(item.productoId, $event)"
+              />
+              <p class="font-display text-xl font-semibold text-musgo-900">
+                {{ item.precio * item.cantidad | cop }}
+              </p>
+            </div>
+            @if (item.cantidad >= item.stock) {
+              <p class="mt-1 text-xs font-semibold text-tierra-600">
+                Es todo lo que hay disponible ({{ item.stock }}).
+              </p>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+
+    <form
+      class="rounded-2xl bg-white p-5 shadow-suave sm:p-6 lg:sticky lg:top-24"
+      [formGroup]="formulario"
+      (ngSubmit)="confirmar()"
+      novalidate
+    >
+      <h2 class="text-xl font-semibold">Resumen</h2>
+      <dl class="mt-3 flex items-baseline justify-between gap-4">
+        <dt>
+          Total · {{ cart.cantidadItems() }}
+          {{ cart.cantidadItems() === 1 ? 'producto' : 'productos' }}
+        </dt>
+        <dd class="font-display text-3xl font-semibold text-musgo-900">{{ cart.total() | cop }}</dd>
+      </dl>
+
+      <app-impact-meter
+        class="mt-3"
+        variante="compacta"
+        [total]="cart.total()"
+        [montoProductor]="cart.montoProductor()"
+        [productor]="carrito.productorNombre"
+      />
+
+      <div class="mt-5">
+        <label for="carrito-direccion" class="block text-sm font-semibold text-musgo-900">
+          Dirección de entrega
+        </label>
+        <textarea
+          id="carrito-direccion"
+          formControlName="direccionEntrega"
+          rows="2"
+          autocomplete="street-address"
+          class="mt-1 block w-full rounded-xl border bg-white px-4 py-3 text-base"
+          [class]="errorDireccion() ? 'border-peligro-600' : 'border-musgo-900/50'"
+          [attr.aria-invalid]="errorDireccion() ? 'true' : null"
+          aria-describedby="carrito-direccion-ayuda"
+        ></textarea>
+        <div id="carrito-direccion-ayuda" class="mt-1 flex justify-between gap-3 text-sm">
+          @if (errorDireccion(); as mensaje) {
+            <p class="font-medium text-peligro-600">{{ mensaje }}</p>
+          } @else {
+            <p class="text-roca-900/80">Barrio, calle o vereda, y cómo llegar.</p>
+          }
+          <p
+            class="shrink-0 tabular-nums"
+            [class]="
+              caracteres() > direccionMaxima ? 'font-semibold text-peligro-600' : 'text-roca-900/70'
+            "
+          >
+            {{ caracteres() }}/{{ direccionMaxima }}
+          </p>
+        </div>
+      </div>
+
+      <p
+        class="mt-4 flex items-center gap-2 rounded-xl bg-musgo-100 px-3 py-2.5 text-sm font-semibold text-musgo-900"
+      >
+        <svg lucideBanknote class="shrink-0" [size]="20" aria-hidden="true"></svg>
+        Pago contra entrega
+      </p>
+
+      @if (errorGeneral(); as mensaje) {
+        <p
+          role="alert"
+          class="mt-4 flex items-start gap-2 rounded-xl bg-peligro-600/10 p-3 text-sm font-semibold text-peligro-600"
+        >
+          <svg lucideCircleAlert class="mt-0.5 shrink-0" [size]="18" aria-hidden="true"></svg>
+          {{ mensaje }}
+        </p>
+      }
+
+      @if (rolSinCompras()) {
+        <p class="mt-4 rounded-xl bg-frailejon-100 p-3 text-sm text-musgo-900">
+          Para hacer pedidos necesitas una cuenta de comprador.
+        </p>
+      } @else {
+        <button
+          type="submit"
+          class="mt-4 flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold text-white transition hover:bg-musgo-900 active:scale-[0.98] disabled:opacity-70"
+          [disabled]="enviando()"
+        >
+          @if (enviando()) {
+            <svg
+              lucideLoaderCircle
+              class="motion-safe:animate-spin"
+              [size]="20"
+              aria-hidden="true"
+            ></svg>
+            Confirmando tu pedido…
+          } @else {
+            Confirmar pedido
+          }
+        </button>
+      }
+    </form>
+  </div>
+}
