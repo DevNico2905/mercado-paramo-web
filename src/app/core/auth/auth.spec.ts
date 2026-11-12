@@ -78,7 +78,10 @@ describe('autenticación', () => {
       });
       backend
         .expectOne(api('/api/auth/login'))
-        .flush(errorApi(401, 'Credenciales inválidas'), { status: 401, statusText: 'Unauthorized' });
+        .flush(errorApi(401, 'Credenciales inválidas'), {
+          status: 401,
+          statusText: 'Unauthorized',
+        });
 
       expect(estado).toBe(401);
       expect(toast.toasts()).toEqual([]);
@@ -88,7 +91,9 @@ describe('autenticación', () => {
     it('al iniciar, restaura la sesión si el token está vigente', async () => {
       tokenStorage.guardar('jwt', 3600);
       const listo = auth.inicializar();
-      backend.expectOne(api('/api/usuarios/me')).flush({ id: 1, nombre: 'María', rol: 'COMPRADOR' });
+      backend
+        .expectOne(api('/api/usuarios/me'))
+        .flush({ id: 1, nombre: 'María', rol: 'COMPRADOR' });
       await listo;
 
       expect(auth.rol()).toBe('COMPRADOR');
@@ -140,7 +145,10 @@ describe('autenticación', () => {
       http.get(api('/api/pedidos')).subscribe({ error: () => undefined });
       backend
         .expectOne(api('/api/pedidos'))
-        .flush(errorApi(401, 'Se requiere autenticación'), { status: 401, statusText: 'Unauthorized' });
+        .flush(errorApi(401, 'Se requiere autenticación'), {
+          status: 401,
+          statusText: 'Unauthorized',
+        });
 
       expect(navegar).not.toHaveBeenCalled();
       expect(toast.toasts()).toEqual([]);
@@ -164,7 +172,9 @@ describe('autenticación', () => {
       http.get(api('/api/categorias')).subscribe({ error: () => undefined });
       http.get(api('/api/productos')).subscribe({ error: () => undefined });
       backend.expectOne(api('/api/categorias')).error(new ProgressEvent('error'));
-      backend.expectOne(api('/api/productos')).flush(null, { status: 503, statusText: 'Unavailable' });
+      backend
+        .expectOne(api('/api/productos'))
+        .flush(null, { status: 503, statusText: 'Unavailable' });
 
       expect(toast.toasts().map((t) => t.mensaje)).toEqual([
         'No pudimos conectar con el servidor. Intenta de nuevo.',
