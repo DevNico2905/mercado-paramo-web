@@ -13,6 +13,32 @@
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Fraunces', ui-serif, Georgia, serif;
+
+  --shadow-suave: 0 8px 30px rgb(30 59 45 / 0.08);
+  --shadow-elevada: 0 20px 60px rgb(30 59 45 / 0.18);
+
+  --animate-aparecer: aparecer 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-crecer: crecer 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-flotar: flotar 5s ease-in-out infinite;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@keyframes crecer {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes flotar {
+  50% {
+    transform: translateY(-0.25rem) rotate(-3deg);
+  }
 }
 
 @keyframes toast-entrada {
