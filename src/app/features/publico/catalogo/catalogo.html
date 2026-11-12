@@ -1,0 +1,229 @@
+<section
+  class="relative overflow-hidden rounded-3xl bg-musgo-900 px-6 py-8 text-white shadow-elevada sm:px-10 sm:py-12"
+  aria-labelledby="hero-titulo"
+>
+  <span
+    class="pointer-events-none absolute -top-28 -right-24 size-80 rounded-full bg-frailejon-400/20 blur-3xl"
+    aria-hidden="true"
+  ></span>
+  <svg
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full text-musgo-700/60 sm:h-32"
+    viewBox="0 0 400 120"
+    preserveAspectRatio="none"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path
+      opacity="0.5"
+      d="M0 70 C60 30 110 80 170 52 C230 24 280 70 330 44 C360 30 385 40 400 34 V120 H0 Z"
+    />
+    <path d="M0 96 C70 66 130 104 200 82 C270 60 330 98 400 74 V120 H0 Z" />
+  </svg>
+
+  <div class="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
+    <div class="motion-safe:animate-aparecer">
+      <p class="text-xs font-bold tracking-[0.18em] text-frailejon-400 uppercase">
+        Del páramo a tu mesa · Guasca, Cundinamarca
+      </p>
+      <h1
+        id="hero-titulo"
+        class="mt-3 text-4xl leading-[1.05] font-semibold text-white sm:text-5xl lg:text-6xl"
+      >
+        Lo que pagas llega a
+        <em class="text-frailejon-400">quien lo cultivó.</em>
+      </h1>
+      <p class="mt-4 max-w-lg text-base text-white/85 sm:text-lg">
+        Compra directo a pequeños productores del páramo de Chingaza. Sin intermediarios.
+      </p>
+    </div>
+
+    <div
+      class="rounded-2xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur-sm motion-safe:animate-aparecer motion-safe:[animation-delay:120ms]"
+    >
+      <p class="font-display text-6xl leading-none font-semibold text-frailejon-400">95&nbsp;%</p>
+      <p class="mt-2 font-semibold">Los productores reciben el 95&nbsp;%</p>
+      <div class="mt-4 flex flex-col gap-2" aria-hidden="true">
+        <div class="h-2.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            class="h-full w-[95%] origin-left rounded-full bg-frailejon-400 motion-safe:animate-crecer"
+          ></div>
+        </div>
+        <div class="h-2.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            class="h-full w-1/4 origin-left rounded-full bg-white/50 motion-safe:animate-crecer motion-safe:[animation-delay:150ms]"
+          ></div>
+        </div>
+      </div>
+      <p class="mt-2 text-sm text-white/80">
+        Con intermediarios reciben solo el {{ intermediarios.minimo }}–{{
+          intermediarios.maximo
+        }}&nbsp;%.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="mt-8" aria-labelledby="catalogo-titulo">
+  <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+    <div>
+      <h2 id="catalogo-titulo" class="text-2xl font-semibold sm:text-3xl">
+        {{ categoriaActual()?.nombre ?? 'Todo el catálogo' }}
+      </h2>
+      <p class="mt-1 min-h-5 text-sm text-roca-900/80" aria-live="polite">
+        @if (carga(); as c) {
+          @if (c.estado === 'listo' && c.productos.length > 0) {
+            {{ c.productos.length }}
+            {{ c.productos.length === 1 ? 'producto disponible' : 'productos disponibles' }}
+          }
+        }
+      </p>
+    </div>
+
+    @if (productores().length > 0) {
+      <div class="w-full sm:w-auto">
+        <label
+          for="filtro-productor"
+          class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+        >
+          Productor
+        </label>
+        <select
+          id="filtro-productor"
+          class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-64"
+          (change)="elegirProductor($any($event.target).value)"
+        >
+          <option value="" [selected]="productorId() === null">Todos los productores</option>
+          @for (opcion of productores(); track opcion.id) {
+            <option [value]="opcion.id" [selected]="opcion.id === productorId()">
+              {{ opcion.nombre }} · {{ opcion.vereda }}
+            </option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+
+  <nav
+    class="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none] sm:-mx-6 sm:px-6"
+    aria-label="Categorías"
+  >
+    <ul class="flex w-max gap-2 py-1">
+      <li>
+        <a
+          routerLink="/"
+          [queryParams]="{ categoria: null }"
+          queryParamsHandling="merge"
+          class="flex min-h-11 items-center rounded-full px-5 text-sm font-semibold whitespace-nowrap ring-1 transition ring-inset"
+          [class]="
+            categoriaId() === null
+              ? 'bg-musgo-700 text-white ring-musgo-700'
+              : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+          "
+          [attr.aria-current]="categoriaId() === null ? 'true' : null"
+        >
+          Todas
+        </a>
+      </li>
+      @for (opcion of categorias(); track opcion.id) {
+        <li>
+          <a
+            routerLink="/"
+            [queryParams]="{ categoria: opcion.id }"
+            queryParamsHandling="merge"
+            class="flex min-h-11 items-center rounded-full px-5 text-sm font-semibold whitespace-nowrap ring-1 transition ring-inset"
+            [class]="
+              categoriaId() === opcion.id
+                ? 'bg-musgo-700 text-white ring-musgo-700'
+                : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+            "
+            [attr.aria-current]="categoriaId() === opcion.id ? 'true' : null"
+          >
+            {{ opcion.nombre }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="mt-5" [attr.aria-busy]="carga().estado === 'cargando'">
+    @let c = carga();
+    @switch (c.estado) {
+      @case ('cargando') {
+        <p class="sr-only" role="status">Cargando productos…</p>
+        <ul
+          class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4"
+          aria-hidden="true"
+        >
+          @for (esqueleto of esqueletos; track esqueleto) {
+            <li class="overflow-hidden rounded-2xl bg-white shadow-suave">
+              <app-skeleton class="aspect-[4/3] rounded-none" />
+              <div class="flex flex-col gap-2.5 p-3 sm:p-4">
+                <app-skeleton class="h-3 w-1/3" />
+                <app-skeleton class="h-5 w-4/5" />
+                <app-skeleton class="h-6 w-1/2" />
+                <app-skeleton class="h-4 w-3/4" />
+                <app-skeleton class="mt-1 h-11 rounded-xl" />
+              </div>
+            </li>
+          }
+        </ul>
+      }
+      @case ('error') {
+        <app-empty-state
+          emoji="🌧️"
+          titulo="No pudimos cargar el catálogo"
+          mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+        >
+          <button
+            type="button"
+            class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+            (click)="reintentar()"
+          >
+            <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+            Intentar de nuevo
+          </button>
+        </app-empty-state>
+      }
+      @case ('listo') {
+        @if (c.productos.length === 0) {
+          @if (hayFiltros()) {
+            <app-empty-state
+              emoji="🧺"
+              titulo="Aquí todavía no hay productos"
+              mensaje="Prueba con otra categoría u otro productor: la cosecha cambia cada semana."
+            >
+              <a
+                routerLink="/"
+                class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+              >
+                Ver todo el catálogo →
+              </a>
+            </app-empty-state>
+          } @else {
+            <app-empty-state
+              emoji="🌱"
+              titulo="La cosecha viene en camino"
+              mensaje="Los productores de Guasca aún no han publicado productos. Vuelve pronto."
+            />
+          }
+        } @else {
+          <ul class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+            @for (producto of c.productos; track producto.id) {
+              <li
+                class="motion-safe:animate-aparecer"
+                [style.animation-delay.ms]="($index < 8 ? $index : 8) * 50"
+              >
+                <app-product-card
+                  [producto]="producto"
+                  [mostrarAgregar]="agregarAlCarrito.disponible()"
+                  [enCarrito]="cart.cantidadDe(producto.id)"
+                  (agregar)="agregarAlCarrito.ejecutar(producto)"
+                />
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </div>
+</section>
