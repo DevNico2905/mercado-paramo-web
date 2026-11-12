@@ -31,7 +31,7 @@
 | --- | --- |
 | Framework | Angular, última versión estable. **Standalone components**, **signals** para el estado, control flow nuevo (`@if`, `@for`, `@switch`), `ChangeDetectionStrategy.OnPush` |
 | Estilos | **Tailwind CSS v4** (vía `@tailwindcss/postcss`). Sin librerías de componentes de terceros |
-| Iconos | `lucide-angular` |
+| Iconos | `@lucide/angular` (sucesor oficial de `lucide-angular`, compatible con Angular 22) |
 | Formularios | Reactive Forms, tipados |
 | HTTP | `HttpClient` con interceptores funcionales |
 | Tipos de la API | Generados desde `openapi.json` con `openapi-typescript` → `src/app/core/api/schema.d.ts`. Los servicios usan esos tipos; no se duplican interfaces a mano |
