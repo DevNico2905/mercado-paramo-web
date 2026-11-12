@@ -1,0 +1,29 @@
+<div
+  class="group/arte relative flex size-full items-center justify-center overflow-hidden bg-linear-to-br"
+  [class]="arte().fondo"
+>
+  <span
+    class="absolute rounded-full blur-2xl"
+    [class]="[arte().halo, tamano() === 'grande' ? 'size-56' : 'size-28']"
+  ></span>
+  <svg
+    class="absolute inset-x-0 bottom-0 h-2/5 w-full text-white"
+    viewBox="0 0 400 120"
+    preserveAspectRatio="none"
+    fill="currentColor"
+  >
+    <path
+      opacity="0.35"
+      d="M0 70 C60 30 110 80 170 52 C230 24 280 70 330 44 C360 30 385 40 400 34 V120 H0 Z"
+    />
+    <path opacity="0.55" d="M0 96 C70 66 130 104 200 82 C270 60 330 98 400 74 V120 H0 Z" />
+  </svg>
+  <span
+    class="relative leading-none drop-shadow-[0_8px_10px_rgb(30_59_45/0.25)] transition-transform duration-300 ease-out motion-safe:group-hover/tarjeta:-translate-y-1 motion-safe:group-hover/tarjeta:scale-110 motion-safe:group-hover/tarjeta:-rotate-6"
+    [class]="
+      tamano() === 'grande' ? 'text-[7rem] motion-safe:animate-flotar sm:text-[9rem]' : 'text-6xl'
+    "
+  >
+    {{ arte().emoji }}
+  </span>
+</div>
