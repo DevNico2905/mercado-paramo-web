@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+
+@theme {
+  --color-musgo-900: #1e3b2d;
+  --color-musgo-700: #2f5d46;
+  --color-musgo-100: #e3ede6;
+  --color-frailejon-400: #e8b931;
+  --color-frailejon-100: #fbf1d3;
+  --color-tierra-600: #8c5a3c;
+  --color-niebla-50: #f5f3ec;
+  --color-roca-900: #2b2b26;
+  --color-peligro-600: #b42318;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+}
+
+@layer base {
+  body {
+    @apply bg-niebla-50 font-sans text-roca-900 antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-musgo-900;
+  }
+}
