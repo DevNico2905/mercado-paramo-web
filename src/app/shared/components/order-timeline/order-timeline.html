@@ -1,0 +1,57 @@
+<ol class="flex" aria-label="Avance del pedido">
+  @for (paso of pasos(); track paso.etiqueta; let indice = $index; let ultimo = $last) {
+    <li
+      class="relative flex flex-1 flex-col items-center text-center"
+      [attr.aria-current]="
+        paso.situacion === 'actual' || paso.situacion === 'fallido' ? 'step' : null
+      "
+    >
+      @if (!ultimo) {
+        <span
+          class="absolute top-4 left-1/2 h-0.5 w-full -translate-y-1/2"
+          [class]="paso.situacion === 'hecho' ? 'bg-musgo-700' : 'bg-musgo-900/15'"
+          aria-hidden="true"
+        ></span>
+      }
+      <span
+        class="relative flex size-8 items-center justify-center rounded-full text-sm font-bold ring-4"
+        [class]="{
+          'bg-musgo-700 text-white ring-white': paso.situacion === 'hecho',
+          'bg-frailejon-400 text-musgo-900 ring-frailejon-100': paso.situacion === 'actual',
+          'bg-peligro-600 text-white ring-peligro-600/20': paso.situacion === 'fallido',
+          'bg-niebla-50 text-roca-900/70 ring-white inset-ring-2 inset-ring-musgo-900/15':
+            paso.situacion === 'pendiente',
+        }"
+        aria-hidden="true"
+      >
+        @switch (paso.situacion) {
+          @case ('hecho') {
+            <svg lucideCheck [size]="16" [strokeWidth]="3"></svg>
+          }
+          @case ('fallido') {
+            <svg lucideX [size]="16" [strokeWidth]="3"></svg>
+          }
+          @default {
+            {{ indice + 1 }}
+          }
+        }
+      </span>
+      <span
+        class="mt-2 text-sm font-semibold"
+        [class]="{
+          'text-musgo-900': paso.situacion === 'hecho' || paso.situacion === 'actual',
+          'text-peligro-600': paso.situacion === 'fallido',
+          'text-roca-900/70': paso.situacion === 'pendiente',
+        }"
+      >
+        {{ paso.etiqueta }}
+        @if (paso.situacion === 'hecho') {
+          <span class="sr-only">(completado)</span>
+        }
+      </span>
+      @if (paso.situacion === 'actual' || paso.situacion === 'fallido') {
+        <span class="mt-0.5 max-w-36 px-1 text-xs text-roca-900/80">{{ paso.detalle }}</span>
+      }
+    </li>
+  }
+</ol>
