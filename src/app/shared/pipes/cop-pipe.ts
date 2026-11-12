@@ -12,6 +12,6 @@ export class CopPipe implements PipeTransform {
     if (value === null || value === undefined || !Number.isFinite(value)) {
       return '';
     }
-    return formatter.format(value);
+    return formatter.format(value).replace(/\s/g, '');
   }
 }
