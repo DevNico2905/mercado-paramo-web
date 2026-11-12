@@ -131,36 +131,14 @@
 
         @if (agregarAlCarrito.disponible() && !agotado()) {
           <div class="mt-6 flex flex-wrap items-end gap-4">
-            <div role="group" aria-labelledby="cantidad-etiqueta">
-              <p id="cantidad-etiqueta" class="text-sm font-semibold text-musgo-900">Cantidad</p>
-              <div
-                class="mt-1 flex items-center rounded-xl bg-white ring-1 ring-musgo-900/50 ring-inset"
-              >
-                <button
-                  type="button"
-                  class="flex size-12 items-center justify-center rounded-l-xl text-musgo-900 hover:bg-musgo-100 disabled:text-roca-900/30 disabled:hover:bg-transparent"
-                  aria-label="Quitar una unidad"
-                  [disabled]="cantidad() <= 1"
-                  (click)="cambiarCantidad(-1)"
-                >
-                  <svg lucideMinus [size]="20" aria-hidden="true"></svg>
-                </button>
-                <output
-                  class="w-12 text-center font-display text-xl font-semibold text-musgo-900"
-                  aria-live="polite"
-                >
-                  {{ cantidad() }}
-                </output>
-                <button
-                  type="button"
-                  class="flex size-12 items-center justify-center rounded-r-xl text-musgo-900 hover:bg-musgo-100 disabled:text-roca-900/30 disabled:hover:bg-transparent"
-                  aria-label="Agregar una unidad"
-                  [disabled]="cantidad() >= p.stock"
-                  (click)="cambiarCantidad(1)"
-                >
-                  <svg lucidePlus [size]="20" aria-hidden="true"></svg>
-                </button>
-              </div>
+            <div>
+              <p class="text-sm font-semibold text-musgo-900" aria-hidden="true">Cantidad</p>
+              <app-quantity-stepper
+                class="mt-1"
+                [cantidad]="cantidad()"
+                [maximo]="p.stock"
+                (cambio)="cantidad.set($event)"
+              />
             </div>
 
             <button

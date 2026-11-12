@@ -13,7 +13,14 @@ import { arteDeCategoria } from './categorias';
 })
 export class CategoryArt {
   readonly categoria = input<string | null>();
-  readonly tamano = input<'tarjeta' | 'grande'>('tarjeta');
+  readonly tamano = input<'miniatura' | 'tarjeta' | 'grande'>('tarjeta');
+
+  protected readonly halo = { miniatura: 'size-10', tarjeta: 'size-28', grande: 'size-56' };
+  protected readonly emoji = {
+    miniatura: 'text-3xl',
+    tarjeta: 'text-6xl',
+    grande: 'text-[7rem] motion-safe:animate-flotar sm:text-[9rem]',
+  };
 
   protected readonly arte = computed(() => arteDeCategoria(this.categoria()));
 }

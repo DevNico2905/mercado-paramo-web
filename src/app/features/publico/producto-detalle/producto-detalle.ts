@@ -13,8 +13,6 @@ import { RouterLink } from '@angular/router';
 import {
   LucideArrowLeft,
   LucideMapPin,
-  LucideMinus,
-  LucidePlus,
   LucideRefreshCw,
   LucideShoppingBasket,
 } from '@lucide/angular';
@@ -26,6 +24,7 @@ import { CartService } from '../../../core/cart/cart-service';
 import { CategoryArt } from '../../../shared/components/category-art/category-art';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ImpactMeter } from '../../../shared/components/impact-meter/impact-meter';
+import { QuantityStepper } from '../../../shared/components/quantity-stepper/quantity-stepper';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
 
@@ -44,12 +43,11 @@ const STOCK_BAJO = 5;
     CategoryArt,
     EmptyState,
     ImpactMeter,
+    QuantityStepper,
     Skeleton,
     CopPipe,
     LucideArrowLeft,
     LucideMapPin,
-    LucideMinus,
-    LucidePlus,
     LucideRefreshCw,
     LucideShoppingBasket,
   ],
@@ -112,11 +110,6 @@ export class ProductoDetalle {
   protected readonly inicialProductor = computed(
     () => this.producto()?.productorNombre.trim().charAt(0).toUpperCase() ?? '',
   );
-
-  protected cambiarCantidad(cambio: number): void {
-    const stock = this.producto()?.stock ?? 1;
-    this.cantidad.update((cantidad) => Math.max(1, Math.min(cantidad + cambio, stock)));
-  }
 
   protected async agregar(producto: Producto): Promise<void> {
     const agregado = await this.agregarAlCarrito.ejecutar(producto, this.cantidad());

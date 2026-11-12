@@ -2,10 +2,7 @@
   class="group/arte relative flex size-full items-center justify-center overflow-hidden bg-linear-to-br"
   [class]="arte().fondo"
 >
-  <span
-    class="absolute rounded-full blur-2xl"
-    [class]="[arte().halo, tamano() === 'grande' ? 'size-56' : 'size-28']"
-  ></span>
+  <span class="absolute rounded-full blur-2xl" [class]="[arte().halo, halo[tamano()]]"></span>
   <svg
     class="absolute inset-x-0 bottom-0 h-2/5 w-full text-white"
     viewBox="0 0 400 120"
@@ -20,9 +17,7 @@
   </svg>
   <span
     class="relative leading-none drop-shadow-[0_8px_10px_rgb(30_59_45/0.25)] transition-transform duration-300 ease-out motion-safe:group-hover/tarjeta:-translate-y-1 motion-safe:group-hover/tarjeta:scale-110 motion-safe:group-hover/tarjeta:-rotate-6"
-    [class]="
-      tamano() === 'grande' ? 'text-[7rem] motion-safe:animate-flotar sm:text-[9rem]' : 'text-6xl'
-    "
+    [class]="emoji[tamano()]"
   >
     {{ arte().emoji }}
   </span>
