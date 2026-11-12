@@ -405,6 +405,8 @@ export interface components {
             email?: string;
             /** @enum {string} */
             rol?: "ADMIN" | "PRODUCTOR" | "COMPRADOR";
+            /** @enum {string} */
+            estadoVerificacion?: "PENDIENTE" | "VERIFICADO" | "RECHAZADO";
         };
         ReporteVentasResponse: {
             /** Format: date */

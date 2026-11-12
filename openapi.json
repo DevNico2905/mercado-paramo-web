@@ -1195,6 +1195,14 @@
               "PRODUCTOR",
               "COMPRADOR"
             ]
+          },
+          "estadoVerificacion": {
+            "type": "string",
+            "enum": [
+              "PENDIENTE",
+              "VERIFICADO",
+              "RECHAZADO"
+            ]
           }
         }
       },
