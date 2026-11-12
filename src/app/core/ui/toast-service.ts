@@ -9,6 +9,7 @@ export interface Toast {
 }
 
 const DURACION_MS = 5000;
+const MAXIMO_VISIBLES = 3;
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
@@ -39,7 +40,7 @@ export class ToastService {
       return;
     }
     const id = this.siguienteId++;
-    this._toasts.update((toasts) => [...toasts, { id, tipo, mensaje }]);
+    this._toasts.update((toasts) => [...toasts, { id, tipo, mensaje }].slice(-MAXIMO_VISIBLES));
     setTimeout(() => this.cerrar(id), DURACION_MS);
   }
 }
