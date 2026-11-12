@@ -1,0 +1,80 @@
+<section class="mx-auto max-w-md py-4 sm:py-10">
+  <div class="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgb(30_59_45/0.08)] sm:p-8">
+    <h1 class="text-3xl font-semibold">Inicia sesión</h1>
+    <p class="mt-2">Entra para hacer pedidos o atender los que recibes.</p>
+
+    <form class="mt-6 flex flex-col gap-5" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      @if (errorGeneral(); as mensaje) {
+        <p
+          role="alert"
+          class="flex items-start gap-2 rounded-xl bg-peligro-600/10 p-3 text-sm font-semibold text-peligro-600"
+        >
+          <svg lucideCircleAlert class="mt-0.5 shrink-0" [size]="18" aria-hidden="true"></svg>
+          {{ mensaje }}
+        </p>
+      }
+
+      <div>
+        <label for="login-email" class="block text-sm font-semibold text-musgo-900">Correo</label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+          [class]="errorDe('email') ? 'border-peligro-600' : 'border-musgo-900/50'"
+          [attr.aria-invalid]="errorDe('email') ? 'true' : null"
+          [attr.aria-describedby]="errorDe('email') ? 'login-email-error' : null"
+        />
+        @if (errorDe('email'); as mensaje) {
+          <p id="login-email-error" class="mt-1 text-sm font-medium text-peligro-600">{{ mensaje }}</p>
+        }
+      </div>
+
+      <div>
+        <label for="login-password" class="block text-sm font-semibold text-musgo-900">
+          Contraseña
+        </label>
+        <input
+          id="login-password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+          [class]="errorDe('password') ? 'border-peligro-600' : 'border-musgo-900/50'"
+          [attr.aria-invalid]="errorDe('password') ? 'true' : null"
+          [attr.aria-describedby]="errorDe('password') ? 'login-password-error' : null"
+        />
+        @if (errorDe('password'); as mensaje) {
+          <p id="login-password-error" class="mt-1 text-sm font-medium text-peligro-600">
+            {{ mensaje }}
+          </p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold text-white hover:bg-musgo-900 disabled:opacity-70"
+        [disabled]="enviando()"
+      >
+        @if (enviando()) {
+          <svg lucideLoaderCircle class="motion-safe:animate-spin" [size]="20" aria-hidden="true"></svg>
+          Entrando…
+        } @else {
+          Entrar
+        }
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm">
+      ¿Aún no tienes cuenta?
+      <a
+        routerLink="/registro"
+        class="inline-flex min-h-11 items-center font-semibold text-musgo-700 underline underline-offset-4"
+      >
+        Crea una cuenta
+      </a>
+    </p>
+  </div>
+</section>
