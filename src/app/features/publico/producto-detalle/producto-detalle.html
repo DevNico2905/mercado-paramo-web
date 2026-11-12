@@ -1,0 +1,189 @@
+<a
+  routerLink="/"
+  class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-musgo-700 hover:text-musgo-900"
+>
+  <svg lucideArrowLeft [size]="18" aria-hidden="true"></svg>
+  Volver al catálogo
+</a>
+
+@let c = carga();
+@switch (c.estado) {
+  @case ('cargando') {
+    <p class="sr-only" role="status">Cargando producto…</p>
+    <div class="mt-2 grid gap-6 lg:grid-cols-2 lg:gap-10" aria-hidden="true">
+      <app-skeleton class="aspect-[4/3] rounded-3xl lg:aspect-square" />
+      <div class="flex flex-col gap-4">
+        <app-skeleton class="h-4 w-24" />
+        <app-skeleton class="h-10 w-4/5" />
+        <app-skeleton class="h-8 w-40" />
+        <app-skeleton class="h-20 rounded-2xl" />
+        <app-skeleton class="h-12 rounded-xl" />
+        <app-skeleton class="h-64 rounded-3xl" />
+      </div>
+    </div>
+  }
+  @case ('no-disponible') {
+    <app-empty-state
+      emoji="🍂"
+      titulo="Este producto ya no está disponible"
+      mensaje="Puede que se haya agotado la cosecha o que el productor lo haya retirado."
+    >
+      <a
+        routerLink="/"
+        class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+      >
+        Explorar el catálogo →
+      </a>
+    </app-empty-state>
+  }
+  @case ('error') {
+    <app-empty-state
+      emoji="🌧️"
+      titulo="No pudimos cargar este producto"
+      mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+    >
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+        (click)="reintentar()"
+      >
+        <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+        Intentar de nuevo
+      </button>
+    </app-empty-state>
+  }
+  @case ('listo') {
+    @let p = c.producto;
+    <article class="mt-2 grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-10">
+      <div
+        class="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-suave motion-safe:animate-aparecer lg:sticky lg:top-24 lg:aspect-square"
+        [class.grayscale]="agotado()"
+      >
+        <app-category-art class="size-full" tamano="grande" [categoria]="p.categoriaNombre" />
+      </div>
+
+      <div class="motion-safe:animate-aparecer motion-safe:[animation-delay:80ms]">
+        <a
+          routerLink="/"
+          [queryParams]="{ categoria: p.categoriaId }"
+          class="inline-flex min-h-11 items-center text-xs font-bold tracking-wider text-tierra-600 uppercase hover:underline"
+        >
+          {{ p.categoriaNombre }}
+        </a>
+        <h1 class="text-4xl leading-tight font-semibold break-words sm:text-5xl">{{ p.nombre }}</h1>
+
+        <p class="mt-4 flex flex-wrap items-baseline gap-x-2">
+          <span class="font-display text-4xl font-semibold text-musgo-900">{{
+            p.precio | cop
+          }}</span>
+          <span class="text-lg text-roca-900/75">/ {{ p.unidad }}</span>
+        </p>
+
+        <p class="mt-3">
+          @if (agotado()) {
+            <span class="rounded-full bg-roca-900 px-3 py-1 text-sm font-bold text-white"
+              >Agotado</span
+            >
+          } @else if (stockBajo()) {
+            <span class="rounded-full bg-frailejon-400 px-3 py-1 text-sm font-bold text-musgo-900">
+              ¡{{ p.stock === 1 ? 'Queda' : 'Quedan' }} {{ p.stock }}!
+            </span>
+          } @else {
+            <span class="rounded-full bg-musgo-100 px-3 py-1 text-sm font-semibold text-musgo-900">
+              {{ p.stock }} disponibles
+            </span>
+          }
+        </p>
+
+        <section
+          class="mt-6 flex items-center gap-4 rounded-2xl bg-white p-4 shadow-suave"
+          aria-label="Productor"
+        >
+          <span
+            class="flex size-14 shrink-0 items-center justify-center rounded-full bg-musgo-100 font-display text-2xl font-semibold text-musgo-900"
+            aria-hidden="true"
+          >
+            {{ inicialProductor() }}
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold tracking-wider text-tierra-600 uppercase">Lo cultiva</p>
+            <p class="font-display text-xl font-semibold break-words text-musgo-900">
+              {{ p.productorNombre }}
+            </p>
+            <p class="flex items-center gap-1 text-sm text-roca-900/80">
+              <svg
+                lucideMapPin
+                class="shrink-0 text-tierra-600"
+                [size]="14"
+                aria-hidden="true"
+              ></svg>
+              Vereda {{ p.vereda }}, Guasca
+            </p>
+          </div>
+          <a
+            routerLink="/"
+            [queryParams]="{ productor: p.productorId }"
+            class="hidden min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-musgo-700 underline underline-offset-4 hover:text-musgo-900 sm:inline-flex"
+          >
+            Ver sus productos
+          </a>
+        </section>
+
+        @if (agregarAlCarrito.disponible() && !agotado()) {
+          <div class="mt-6 flex flex-wrap items-end gap-4">
+            <div role="group" aria-labelledby="cantidad-etiqueta">
+              <p id="cantidad-etiqueta" class="text-sm font-semibold text-musgo-900">Cantidad</p>
+              <div
+                class="mt-1 flex items-center rounded-xl bg-white ring-1 ring-musgo-900/50 ring-inset"
+              >
+                <button
+                  type="button"
+                  class="flex size-12 items-center justify-center rounded-l-xl text-musgo-900 hover:bg-musgo-100 disabled:text-roca-900/30 disabled:hover:bg-transparent"
+                  aria-label="Quitar una unidad"
+                  [disabled]="cantidad() <= 1"
+                  (click)="cambiarCantidad(-1)"
+                >
+                  <svg lucideMinus [size]="20" aria-hidden="true"></svg>
+                </button>
+                <output
+                  class="w-12 text-center font-display text-xl font-semibold text-musgo-900"
+                  aria-live="polite"
+                >
+                  {{ cantidad() }}
+                </output>
+                <button
+                  type="button"
+                  class="flex size-12 items-center justify-center rounded-r-xl text-musgo-900 hover:bg-musgo-100 disabled:text-roca-900/30 disabled:hover:bg-transparent"
+                  aria-label="Agregar una unidad"
+                  [disabled]="cantidad() >= p.stock"
+                  (click)="cambiarCantidad(1)"
+                >
+                  <svg lucidePlus [size]="20" aria-hidden="true"></svg>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold whitespace-nowrap text-white transition hover:bg-musgo-900 active:scale-[0.98]"
+              (click)="agregar(p)"
+            >
+              <svg lucideShoppingBasket [size]="20" aria-hidden="true"></svg>
+              Agregar al carrito · {{ subtotal() | cop }}
+            </button>
+          </div>
+          @if (cart.cantidadDe(p.id); as enCarrito) {
+            <p class="mt-2 text-sm text-roca-900/80">Ya tienes {{ enCarrito }} en tu carrito.</p>
+          }
+        }
+
+        <app-impact-meter
+          class="mt-8"
+          [total]="subtotal() || p.precio"
+          [productor]="p.productorNombre"
+          [vereda]="p.vereda"
+        />
+      </div>
+    </article>
+  }
+}
