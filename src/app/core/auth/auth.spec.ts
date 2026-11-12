@@ -76,12 +76,10 @@ describe('autenticación', () => {
       auth.login({ email: 'a@b.co', password: 'mala' }).subscribe({
         error: (error: { status: number }) => (estado = error.status),
       });
-      backend
-        .expectOne(api('/api/auth/login'))
-        .flush(errorApi(401, 'Credenciales inválidas'), {
-          status: 401,
-          statusText: 'Unauthorized',
-        });
+      backend.expectOne(api('/api/auth/login')).flush(errorApi(401, 'Credenciales inválidas'), {
+        status: 401,
+        statusText: 'Unauthorized',
+      });
 
       expect(estado).toBe(401);
       expect(toast.toasts()).toEqual([]);
@@ -143,12 +141,10 @@ describe('autenticación', () => {
     it('un 401 sin sesión no redirige', () => {
       const navegar = vi.spyOn(router, 'navigate');
       http.get(api('/api/pedidos')).subscribe({ error: () => undefined });
-      backend
-        .expectOne(api('/api/pedidos'))
-        .flush(errorApi(401, 'Se requiere autenticación'), {
-          status: 401,
-          statusText: 'Unauthorized',
-        });
+      backend.expectOne(api('/api/pedidos')).flush(errorApi(401, 'Se requiere autenticación'), {
+        status: 401,
+        statusText: 'Unauthorized',
+      });
 
       expect(navegar).not.toHaveBeenCalled();
       expect(toast.toasts()).toEqual([]);

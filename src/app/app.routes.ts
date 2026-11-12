@@ -16,14 +16,15 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         title: titulo('Catálogo'),
-        data: { titulo: 'Catálogo' },
-        loadComponent: provisional,
+        loadComponent: () => import('./features/publico/catalogo/catalogo').then((m) => m.Catalogo),
       },
       {
         path: 'productos/:id',
         title: titulo('Producto'),
-        data: { titulo: 'Detalle de producto' },
-        loadComponent: provisional,
+        loadComponent: () =>
+          import('./features/publico/producto-detalle/producto-detalle').then(
+            (m) => m.ProductoDetalle,
+          ),
       },
       {
         path: 'login',
@@ -34,9 +35,8 @@ export const routes: Routes = [
       {
         path: 'registro',
         title: titulo('Crear cuenta'),
-        data: { titulo: 'Crear cuenta' },
         canActivate: [guestGuard],
-        loadComponent: provisional,
+        loadComponent: () => import('./features/publico/registro/registro').then((m) => m.Registro),
       },
       {
         path: 'carrito',
