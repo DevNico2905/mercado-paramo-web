@@ -1,0 +1,120 @@
+@if (variante() === 'compacta') {
+  <p class="flex items-center gap-3 rounded-2xl bg-frailejon-100 px-4 py-3 text-musgo-900">
+    <span
+      class="flex size-9 shrink-0 items-center justify-center rounded-full bg-frailejon-400"
+      aria-hidden="true"
+    >
+      <svg lucideHeartHandshake [size]="20"></svg>
+    </span>
+    <span class="flex-1 text-sm leading-snug">
+      <strong class="font-display text-lg font-semibold">{{ monto() | cop }}</strong>
+      @switch (perspectiva()) {
+        @case ('productor') {
+          son para ti
+        }
+        @case ('plataforma') {
+          llegaron a los productores
+        }
+        @default {
+          llegan a {{ nombreCorto() ?? 'quien lo cultivó' }}
+        }
+      }
+    </span>
+    <span class="rounded-full bg-musgo-900 px-2.5 py-1 text-xs font-bold text-frailejon-400">
+      {{ participacionTexto() }}
+    </span>
+  </p>
+} @else {
+  <section
+    class="relative overflow-hidden rounded-3xl bg-musgo-900 p-6 text-white shadow-elevada sm:p-8"
+    aria-label="Medidor de impacto"
+  >
+    <span
+      class="pointer-events-none absolute -top-24 -right-20 size-64 rounded-full bg-frailejon-400/15 blur-3xl"
+      aria-hidden="true"
+    ></span>
+    <span
+      class="pointer-events-none absolute -bottom-28 -left-16 size-64 rounded-full bg-musgo-700/60 blur-3xl"
+      aria-hidden="true"
+    ></span>
+
+    <div class="relative">
+      <p
+        class="flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-frailejon-400 uppercase"
+      >
+        <svg lucideHeartHandshake [size]="18" aria-hidden="true"></svg>
+        Lo que pagas llega a quien lo cultivó
+      </p>
+
+      <p
+        class="mt-4 font-display text-5xl leading-none font-semibold text-frailejon-400 sm:text-6xl"
+      >
+        {{ monto() | cop }}
+      </p>
+
+      <p class="mt-3 max-w-xl text-lg leading-snug text-white/90">
+        @switch (perspectiva()) {
+          @case ('productor') {
+            De {{ total() | cop }} vendidos,
+            <strong class="font-semibold text-white">recibiste {{ monto() | cop }}</strong
+            >.
+          }
+          @case ('plataforma') {
+            De {{ total() | cop }} vendidos,
+            <strong class="font-semibold text-white">
+              {{ monto() | cop }} llegaron directamente a los productores</strong
+            >.
+          }
+          @default {
+            De tus {{ total() | cop }},
+            <strong class="font-semibold text-white">
+              {{ monto() | cop }} llegan a {{ nombreCorto() ?? 'quien lo cultivó' }}</strong
+            >{{ sufijoVereda() }}.
+          }
+        }
+      </p>
+
+      <dl class="mt-7 flex flex-col gap-5">
+        <div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-sm font-semibold">En Mercado Páramo</dt>
+            <dd class="font-display text-2xl font-semibold text-frailejon-400">
+              {{ participacionTexto() }}
+            </dd>
+          </div>
+          <div class="mt-2 h-4 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+            <div
+              class="h-full origin-left rounded-full bg-linear-to-r from-frailejon-400/80 to-frailejon-400 transition-[width] duration-700 ease-out motion-safe:animate-crecer"
+              [style.width.%]="anchoBarra()"
+            ></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-sm font-semibold text-white/80">Con intermediarios</dt>
+            <dd class="font-display text-2xl font-semibold text-white/80">
+              {{ intermediarios.minimo }}–{{ intermediarios.maximo }}&nbsp;%
+            </dd>
+          </div>
+          <div class="mt-2 h-4 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+            <div
+              class="flex h-full origin-left overflow-hidden rounded-full motion-safe:animate-crecer motion-safe:[animation-delay:150ms]"
+              [style.width.%]="intermediarios.maximo"
+            >
+              <div
+                class="h-full bg-white/55"
+                [style.width.%]="(intermediarios.minimo / intermediarios.maximo) * 100"
+              ></div>
+              <div class="h-full flex-1 bg-white/30"></div>
+            </div>
+          </div>
+          <p class="mt-2 text-sm text-white/75">
+            Con intermediarios habría recibido entre {{ conIntermediarios().minimo | cop }} y
+            {{ conIntermediarios().maximo | cop }}.
+          </p>
+        </div>
+      </dl>
+    </div>
+  </section>
+}
