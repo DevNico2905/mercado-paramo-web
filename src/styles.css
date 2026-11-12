@@ -15,9 +15,25 @@
   --font-display: 'Fraunces', ui-serif, Georgia, serif;
 }
 
+@keyframes toast-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
 @layer base {
   body {
     @apply bg-niebla-50 font-sans text-roca-900 antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-musgo-700;
+  }
+
+  button:not(:disabled),
+  [role='button'] {
+    @apply cursor-pointer;
   }
 
   h1,
