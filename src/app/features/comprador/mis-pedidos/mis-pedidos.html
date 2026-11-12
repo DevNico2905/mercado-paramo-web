@@ -1,0 +1,322 @@
+<header>
+  <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Tu cuenta</p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">Mis pedidos</h1>
+</header>
+
+@let f = filtros();
+<section class="mt-4" aria-label="Filtros">
+  <nav
+    class="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] sm:-mx-6 sm:px-6"
+    aria-label="Estado del pedido"
+  >
+    <ul class="flex w-max gap-2 py-1">
+      <li>
+        <a
+          routerLink="."
+          [queryParams]="{ estado: null }"
+          queryParamsHandling="merge"
+          class="flex min-h-11 items-center rounded-full px-5 text-sm font-semibold whitespace-nowrap ring-1 transition ring-inset"
+          [class]="
+            f.estado === null
+              ? 'bg-musgo-700 text-white ring-musgo-700'
+              : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+          "
+          [attr.aria-current]="f.estado === null ? 'true' : null"
+        >
+          Todos
+        </a>
+      </li>
+      @for (opcion of estados; track opcion.valor) {
+        <li>
+          <a
+            routerLink="."
+            [queryParams]="{ estado: opcion.valor }"
+            queryParamsHandling="merge"
+            class="flex min-h-11 items-center rounded-full px-5 text-sm font-semibold whitespace-nowrap ring-1 transition ring-inset"
+            [class]="
+              f.estado === opcion.valor
+                ? 'bg-musgo-700 text-white ring-musgo-700'
+                : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+            "
+            [attr.aria-current]="f.estado === opcion.valor ? 'true' : null"
+          >
+            {{ opcion.etiqueta }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="mt-3 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
+    <div>
+      <label
+        for="pedidos-desde"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+      >
+        Desde
+      </label>
+      <input
+        id="pedidos-desde"
+        type="date"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-44"
+        [value]="f.desde ?? ''"
+        [max]="f.hasta ?? ''"
+        (change)="filtrar({ desde: $any($event.target).value || null })"
+      />
+    </div>
+    <div>
+      <label
+        for="pedidos-hasta"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+      >
+        Hasta
+      </label>
+      <input
+        id="pedidos-hasta"
+        type="date"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-44"
+        [value]="f.hasta ?? ''"
+        [min]="f.desde ?? ''"
+        (change)="filtrar({ hasta: $any($event.target).value || null })"
+      />
+    </div>
+    <div class="col-span-2 sm:col-span-1">
+      <label
+        for="pedidos-orden"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+      >
+        Ordenar por
+      </label>
+      <select
+        id="pedidos-orden"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-48"
+        (change)="ordenar($any($event.target).value)"
+      >
+        @for (opcion of ordenes; track opcion.valor) {
+          <option [value]="opcion.valor" [selected]="opcion.valor === f.orden">
+            {{ opcion.etiqueta }}
+          </option>
+        }
+      </select>
+    </div>
+    @if (hayFiltros()) {
+      <button
+        type="button"
+        class="col-span-2 min-h-11 rounded-xl px-3 text-sm font-semibold text-musgo-700 underline underline-offset-4 hover:text-musgo-900 sm:col-span-1"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+    }
+  </div>
+  @if (rangoInvalido()) {
+    <p role="alert" class="mt-2 text-sm font-medium text-peligro-600">
+      La fecha inicial no puede ser posterior a la final.
+    </p>
+  }
+</section>
+
+<section
+  class="mt-6"
+  [attr.aria-busy]="carga().estado === 'cargando'"
+  aria-label="Lista de pedidos"
+>
+  @let c = carga();
+  @switch (c.estado) {
+    @case ('cargando') {
+      <p class="sr-only" role="status">Cargando tus pedidos…</p>
+      <ul class="flex flex-col gap-3" aria-hidden="true">
+        @for (esqueleto of esqueletos; track esqueleto) {
+          <li class="rounded-2xl bg-white p-4 shadow-suave sm:p-5">
+            <div class="flex justify-between gap-4">
+              <app-skeleton class="h-6 w-32" />
+              <app-skeleton class="h-6 w-24 rounded-full" />
+            </div>
+            <app-skeleton class="mt-3 h-4 w-48" />
+            <app-skeleton class="mt-3 h-7 w-28" />
+          </li>
+        }
+      </ul>
+    }
+    @case ('error') {
+      <app-empty-state
+        emoji="🌧️"
+        titulo="No pudimos cargar tus pedidos"
+        mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+      >
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+          (click)="reintentar()"
+        >
+          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          Intentar de nuevo
+        </button>
+      </app-empty-state>
+    }
+    @case ('listo') {
+      @if (c.pedidos.length === 0) {
+        @if (hayFiltros()) {
+          <app-empty-state
+            emoji="🔎"
+            titulo="Ningún pedido coincide"
+            mensaje="Prueba con otro estado o con un rango de fechas más amplio."
+          >
+            <button
+              type="button"
+              class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+              (click)="limpiarFiltros()"
+            >
+              Ver todos mis pedidos
+            </button>
+          </app-empty-state>
+        } @else {
+          <app-empty-state
+            emoji="🧺"
+            titulo="Aún no tienes pedidos"
+            mensaje="Cuando hagas tu primer pedido, aquí podrás seguir su avance."
+          >
+            <a
+              routerLink="/"
+              class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+            >
+              Explora el catálogo →
+            </a>
+          </app-empty-state>
+        }
+      } @else {
+        <ul class="flex flex-col gap-3">
+          @for (pedido of c.pedidos; track pedido.id) {
+            @let abierto = abiertos().has(pedido.id);
+            <li
+              class="rounded-2xl bg-white shadow-suave motion-safe:animate-aparecer"
+              [style.animation-delay.ms]="($index < 6 ? $index : 6) * 50"
+            >
+              <article [attr.aria-labelledby]="'pedido-' + pedido.id">
+                <div class="p-4 sm:p-5">
+                  <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                    <div>
+                      <h2 [id]="'pedido-' + pedido.id" class="text-xl font-semibold">
+                        Pedido n.º {{ pedido.id }}
+                      </h2>
+                      <p class="text-sm text-roca-900/80">
+                        <time [attr.datetime]="pedido.fecha">
+                          {{ pedido.fecha | date: "d 'de' MMMM 'de' y, h:mm a" }}
+                        </time>
+                      </p>
+                    </div>
+                    <app-status-badge [estado]="pedido.estado" />
+                  </div>
+
+                  <div class="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                    <div>
+                      <p class="text-sm">
+                        A
+                        <span class="font-semibold text-musgo-900">{{
+                          pedido.productorNombre
+                        }}</span>
+                        · vereda {{ pedido.vereda }}
+                      </p>
+                      <p class="font-display text-2xl font-semibold text-musgo-900">
+                        {{ pedido.total | cop }}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      class="flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-musgo-700 hover:bg-musgo-100"
+                      [attr.aria-expanded]="abierto"
+                      [attr.aria-controls]="'pedido-detalle-' + pedido.id"
+                      (click)="alternar(pedido.id)"
+                    >
+                      {{ abierto ? 'Ocultar detalle' : 'Ver detalle' }}
+                      <svg
+                        lucideChevronDown
+                        class="transition-transform duration-200"
+                        [class.rotate-180]="abierto"
+                        [size]="18"
+                        aria-hidden="true"
+                      ></svg>
+                    </button>
+                  </div>
+                </div>
+
+                @if (abierto) {
+                  <div
+                    [id]="'pedido-detalle-' + pedido.id"
+                    class="border-t border-musgo-900/10 p-4 motion-safe:animate-aparecer sm:p-5"
+                  >
+                    <app-order-timeline [estado]="pedido.estado" />
+
+                    <h3
+                      class="mt-6 text-xs font-bold tracking-wider text-tierra-600 uppercase font-sans"
+                    >
+                      Productos
+                    </h3>
+                    <ul class="mt-2 divide-y divide-musgo-900/10">
+                      @for (detalle of pedido.detalles; track detalle.productoId) {
+                        <li class="flex items-baseline justify-between gap-4 py-2">
+                          <p>
+                            <span class="font-semibold text-musgo-900">{{
+                              detalle.productoNombre
+                            }}</span>
+                            <span class="block text-sm text-roca-900/80">
+                              {{ detalle.cantidad }} × {{ detalle.precioUnitario | cop }} /
+                              {{ detalle.unidad }}
+                            </span>
+                          </p>
+                          <p class="font-semibold tabular-nums">{{ detalle.subtotal | cop }}</p>
+                        </li>
+                      }
+                    </ul>
+
+                    <p class="mt-4 flex items-start gap-2 text-sm">
+                      <svg
+                        lucideMapPin
+                        class="mt-0.5 shrink-0 text-tierra-600"
+                        [size]="16"
+                        aria-hidden="true"
+                      ></svg>
+                      <span>
+                        <span class="font-semibold text-musgo-900">Entrega:</span>
+                        {{ pedido.direccionEntrega }}
+                      </span>
+                    </p>
+
+                    <app-impact-meter
+                      class="mt-4"
+                      variante="compacta"
+                      [total]="pedido.total"
+                      [montoProductor]="pedido.montoProductor"
+                      [productor]="pedido.productorNombre"
+                    />
+
+                    @if (pedido.estado === 'PENDIENTE') {
+                      <button
+                        type="button"
+                        class="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 font-semibold text-peligro-600 ring-1 ring-peligro-600/40 ring-inset hover:bg-peligro-600/10 disabled:opacity-70 sm:w-auto"
+                        [disabled]="cancelando() === pedido.id"
+                        (click)="cancelar(pedido)"
+                      >
+                        @if (cancelando() === pedido.id) {
+                          <svg
+                            lucideLoaderCircle
+                            class="motion-safe:animate-spin"
+                            [size]="18"
+                            aria-hidden="true"
+                          ></svg>
+                          Cancelando…
+                        } @else {
+                          Cancelar pedido
+                        }
+                      </button>
+                    }
+                  </div>
+                }
+              </article>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
