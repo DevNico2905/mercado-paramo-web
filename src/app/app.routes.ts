@@ -41,15 +41,14 @@ export const routes: Routes = [
       {
         path: 'carrito',
         title: titulo('Carrito'),
-        data: { titulo: 'Carrito' },
-        loadComponent: provisional,
+        loadComponent: () => import('./features/comprador/carrito/carrito').then((m) => m.Carrito),
       },
       {
         path: 'mis-pedidos',
         title: titulo('Mis pedidos'),
-        data: { titulo: 'Mis pedidos' },
         canActivate: [authGuard, roleGuard(['COMPRADOR'])],
-        loadComponent: provisional,
+        loadComponent: () =>
+          import('./features/comprador/mis-pedidos/mis-pedidos').then((m) => m.MisPedidos),
       },
       {
         path: 'productor',
