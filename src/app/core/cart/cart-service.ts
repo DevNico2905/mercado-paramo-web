@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { Producto } from '../api/models';
 import { PARTICIPACION_PRODUCTOR } from '../impacto';
 
@@ -97,16 +97,11 @@ export class CartService {
   /** Solo para mostrar: el valor oficial lo calcula la API al crear el pedido. */
   readonly montoProductor = computed(() => Math.round(this.total() * PARTICIPACION_PRODUCTOR));
 
-  constructor() {
-    effect(() => {
-      const carrito = this._carrito();
-      if (carrito.items.length === 0) {
-        localStorage.removeItem(CLAVE);
-      } else {
-        localStorage.setItem(CLAVE, JSON.stringify(carrito));
-      }
-    });
-  }
+  /**
+   * Dirección de entrega a medio escribir. Vive solo en memoria, para no perderla si el
+   * usuario pasa por el login antes de confirmar.
+   */
+  readonly direccionBorrador = signal('');
 
   cantidadDe(productoId: number): number {
     return this.items().find((item) => item.productoId === productoId)?.cantidad ?? 0;
@@ -137,7 +132,7 @@ export class CartService {
       stock: producto.stock,
       categoriaNombre: producto.categoriaNombre,
     };
-    this._carrito.update((carrito) => ({
+    this.cambiar((carrito) => ({
       productorId: producto.productorId,
       productorNombre: producto.productorNombre,
       vereda: producto.vereda,
@@ -196,11 +191,23 @@ export class CartService {
   }
 
   vaciar(): void {
-    this._carrito.set(VACIO);
+    this.cambiar(() => VACIO);
+    this.direccionBorrador.set('');
+  }
+
+  /** Aplica un cambio al carrito y lo guarda de inmediato, para no perderlo al recargar. */
+  private cambiar(cambio: (carrito: Carrito) => Carrito): void {
+    const carrito = cambio(this._carrito());
+    this._carrito.set(carrito);
+    if (carrito.items.length === 0) {
+      localStorage.removeItem(CLAVE);
+    } else {
+      localStorage.setItem(CLAVE, JSON.stringify(carrito));
+    }
   }
 
   private actualizarItems(cambio: (items: ItemCarrito[]) => ItemCarrito[]): void {
-    this._carrito.update((carrito) => {
+    this.cambiar((carrito) => {
       const items = cambio(carrito.items);
       return items.length === 0 ? VACIO : { ...carrito, items };
     });

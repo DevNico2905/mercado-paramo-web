@@ -97,7 +97,6 @@ describe('CartService', () => {
 
   it('persiste en localStorage con la clave mp_carrito y lo restaura', () => {
     cart.agregar(producto(), 2);
-    TestBed.tick();
 
     const guardado = JSON.parse(localStorage.getItem('mp_carrito') ?? '{}');
     expect(guardado.productorId).toBe(10);
@@ -118,7 +117,6 @@ describe('CartService', () => {
     expect(restaurado.cantidadDe(1)).toBe(2);
 
     restaurado.vaciar();
-    TestBed.tick();
     expect(localStorage.getItem('mp_carrito')).toBeNull();
   });
 
