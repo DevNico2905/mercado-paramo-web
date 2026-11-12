@@ -35,12 +35,7 @@ export class AuthService {
 
   login(credenciales: LoginRequest): Observable<Perfil> {
     return this.http.post<LoginResponse>(URL_LOGIN, credenciales).pipe(
-      tap(({ token, expiraEnSegundos }) => {
-        if (!token || expiraEnSegundos === undefined) {
-          throw new Error('La respuesta de inicio de sesión no trae el token.');
-        }
-        this.tokenStorage.guardar(token, expiraEnSegundos);
-      }),
+      tap(({ token, expiraEnSegundos }) => this.tokenStorage.guardar(token, expiraEnSegundos)),
       switchMap(() => this.cargarPerfil()),
       catchError((error: unknown) => {
         this.logout();
