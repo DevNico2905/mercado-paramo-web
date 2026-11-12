@@ -53,5 +53,18 @@ export function pasosDelPedido(estado: EstadoPedido): PasoPedido[] {
 export class OrderTimeline {
   readonly estado = input.required<EstadoPedido>();
 
+  protected readonly circulo: Record<PasoPedido['situacion'], string> = {
+    hecho: 'bg-musgo-700 text-white ring-white',
+    actual: 'bg-frailejon-400 text-musgo-900 ring-frailejon-100',
+    fallido: 'bg-peligro-600 text-white ring-peligro-600/20',
+    pendiente: 'bg-niebla-50 text-roca-900/70 ring-white inset-ring-2 inset-ring-musgo-900/15',
+  };
+  protected readonly etiqueta: Record<PasoPedido['situacion'], string> = {
+    hecho: 'text-musgo-900',
+    actual: 'text-musgo-900',
+    fallido: 'text-peligro-600',
+    pendiente: 'text-roca-900/70',
+  };
+
   protected readonly pasos = computed(() => pasosDelPedido(this.estado()));
 }
