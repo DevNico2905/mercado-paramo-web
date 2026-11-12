@@ -26,6 +26,14 @@
         >
           <svg [lucideIcon]="destino.icono" [size]="18" aria-hidden="true"></svg>
           {{ destino.etiqueta }}
+          @if (destino.ruta === '/carrito' && cart.cantidadItems(); as cantidad) {
+            <span
+              class="rounded-full bg-frailejon-400 px-2 py-0.5 text-xs font-bold text-musgo-900"
+            >
+              {{ cantidad
+              }}<span class="sr-only"> {{ cantidad === 1 ? 'producto' : 'productos' }}</span>
+            </span>
+          }
         </a>
       }
       @if (auth.estaAutenticado()) {
@@ -42,9 +50,28 @@
   </div>
 </header>
 
-<main id="contenido" tabindex="-1" class="mx-auto max-w-6xl px-4 pt-6 pb-28 outline-none sm:px-6 md:pb-12">
+<main
+  id="contenido"
+  tabindex="-1"
+  class="mx-auto max-w-6xl px-4 pt-6 outline-none sm:px-6 md:pb-12"
+  [class]="mostrarBarraCarrito() ? 'pb-44' : 'pb-28'"
+>
   <router-outlet />
 </main>
+
+@if (mostrarBarraCarrito()) {
+  <a
+    routerLink="/carrito"
+    class="fixed inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 flex min-h-13 items-center justify-center gap-2 rounded-2xl bg-musgo-700 px-4 text-sm font-semibold text-white shadow-elevada motion-safe:animate-aparecer md:hidden"
+  >
+    <svg lucideShoppingBasket class="shrink-0" [size]="20" aria-hidden="true"></svg>
+    <span>
+      Ver carrito · {{ cart.cantidadItems() }}
+      {{ cart.cantidadItems() === 1 ? 'producto' : 'productos' }} ·
+      <span class="text-frailejon-400">{{ cart.total() | cop }}</span>
+    </span>
+  </a>
+}
 
 <nav
   class="fixed inset-x-0 bottom-0 z-30 border-t border-musgo-900/10 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
@@ -60,8 +87,16 @@
           ariaCurrentWhenActive="page"
           class="flex min-h-16 flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold text-roca-900/75"
         >
-          <span class="flex h-8 w-14 items-center justify-center rounded-full">
+          <span class="relative flex h-8 w-14 items-center justify-center rounded-full">
             <svg [lucideIcon]="destino.icono" [size]="22" aria-hidden="true"></svg>
+            @if (destino.ruta === '/carrito' && cart.cantidadItems(); as cantidad) {
+              <span
+                class="absolute -top-1 right-1 min-w-5 rounded-full bg-frailejon-400 px-1.5 py-0.5 text-center text-[0.6875rem] leading-none font-bold text-musgo-900"
+              >
+                {{ cantidad
+                }}<span class="sr-only"> {{ cantidad === 1 ? 'producto' : 'productos' }}</span>
+              </span>
+            }
           </span>
           <span>{{ destino.etiqueta }}</span>
         </a>
