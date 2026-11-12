@@ -1,0 +1,85 @@
+@let p = producto();
+<article
+  class="group/tarjeta relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-suave transition duration-300 ease-out focus-within:shadow-elevada hover:shadow-elevada motion-safe:hover:-translate-y-1"
+>
+  <div class="relative aspect-[4/3]" [class.grayscale]="agotado()">
+    <app-category-art class="size-full" [categoria]="p.categoriaNombre" />
+    @if (stockBajo()) {
+      <span
+        class="absolute top-2 left-2 rounded-full bg-frailejon-400 px-2.5 py-1 text-xs font-bold text-musgo-900 shadow-suave"
+      >
+        ¡{{ p.stock === 1 ? 'Queda' : 'Quedan' }} {{ p.stock }}!
+      </span>
+    } @else if (agotado()) {
+      <span
+        class="absolute top-2 left-2 rounded-full bg-roca-900 px-2.5 py-1 text-xs font-bold text-white"
+      >
+        Agotado
+      </span>
+    }
+    @if (enCarrito() > 0) {
+      <span
+        class="absolute top-2 right-2 rounded-full bg-musgo-900 px-2.5 py-1 text-xs font-bold text-white"
+      >
+        {{ enCarrito() }} en tu carrito
+      </span>
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col p-3 sm:p-4">
+    <p class="text-[0.6875rem] font-bold tracking-wider text-tierra-600 uppercase">
+      {{ p.categoriaNombre }}
+    </p>
+    <h3 class="mt-1 text-lg leading-tight font-semibold break-words">
+      @if (p.id !== undefined) {
+        <a
+          [routerLink]="['/productos', p.id]"
+          class="outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-musgo-700"
+        >
+          {{ p.nombre }}
+        </a>
+      } @else {
+        {{ p.nombre }}
+      }
+    </h3>
+
+    <p class="mt-2 flex flex-wrap items-baseline gap-x-1">
+      <span class="font-display text-xl font-semibold text-musgo-900">{{ p.precio | cop }}</span>
+      <span class="text-sm text-roca-900/75">/ {{ p.unidad }}</span>
+    </p>
+
+    <p class="mt-2 flex items-start gap-1 text-sm text-roca-900/80">
+      <svg
+        lucideMapPin
+        class="mt-0.5 shrink-0 text-tierra-600"
+        [size]="14"
+        aria-hidden="true"
+      ></svg>
+      <span class="break-words">
+        <span class="font-semibold text-roca-900">{{ p.productorNombre }}</span>
+        · {{ p.vereda }}
+      </span>
+    </p>
+
+    @if (mostrarAgregar()) {
+      <div class="mt-auto pt-3">
+        <button
+          type="button"
+          class="relative flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-musgo-700 px-3 text-sm font-semibold text-white transition hover:bg-musgo-900 active:scale-95 disabled:bg-roca-900/10 disabled:text-roca-900/70"
+          [disabled]="agotado()"
+          [attr.aria-label]="
+            agotado() ? p.nombre + ' está agotado' : 'Agregar ' + p.nombre + ' al carrito'
+          "
+          (click)="agregar.emit()"
+        >
+          @if (agotado()) {
+            Agotado
+          } @else {
+            <svg lucidePlus [size]="18" [strokeWidth]="2.5" aria-hidden="true"></svg>
+            Agregar
+          }
+        </button>
+      </div>
+    }
+  </div>
+</article>
