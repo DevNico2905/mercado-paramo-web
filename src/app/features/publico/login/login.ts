@@ -6,10 +6,11 @@ import { LucideCircleAlert, LucideLoaderCircle } from '@lucide/angular';
 import { aplicarErroresApi } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth-service';
 import { inicioPorRol } from '../../../core/auth/inicio-por-rol';
+import { MensajesDeError, mensajeDeError, redirectSeguro } from '../../../shared/forms/errores';
 
 type Campo = 'email' | 'password';
 
-const MENSAJES: Record<Campo, Record<string, string>> = {
+const MENSAJES: Record<Campo, MensajesDeError> = {
   email: {
     required: 'Escribe tu correo.',
     email: 'Escribe un correo válido, como nombre@correo.com.',
@@ -41,16 +42,7 @@ export class Login {
   });
 
   protected errorDe(campo: Campo): string | null {
-    const control = this.formulario.controls[campo];
-    if (!control.touched || !control.errors) {
-      return null;
-    }
-    const errores = control.errors;
-    if (typeof errores['servidor'] === 'string') {
-      return errores['servidor'];
-    }
-    const clave = Object.keys(errores).find((error) => error in MENSAJES[campo]);
-    return clave ? MENSAJES[campo][clave] : 'Revisa este campo.';
+    return mensajeDeError(this.formulario.controls[campo], MENSAJES[campo]);
   }
 
   protected enviar(): void {
@@ -65,7 +57,7 @@ export class Login {
     this.enviando.set(true);
     this.auth.login(this.formulario.getRawValue()).subscribe({
       next: (perfil) => {
-        void this.router.navigateByUrl(this.destinoSeguro() ?? inicioPorRol(perfil.rol));
+        void this.router.navigateByUrl(redirectSeguro(this.redirect()) ?? inicioPorRol(perfil.rol));
       },
       error: (error: unknown) => {
         this.enviando.set(false);
@@ -85,11 +77,5 @@ export class Login {
       return null;
     }
     return aplicarErroresApi(this.formulario, error);
-  }
-
-  /** Solo se aceptan rutas internas, para no redirigir a otro sitio. */
-  private destinoSeguro(): string | null {
-    const destino = this.redirect();
-    return destino && destino.startsWith('/') && !destino.startsWith('//') ? destino : null;
   }
 }

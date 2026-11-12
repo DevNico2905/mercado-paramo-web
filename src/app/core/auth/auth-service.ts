@@ -2,10 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, firstValueFrom, map, of, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoginRequest, LoginResponse, Perfil, Rol } from '../api/models';
+import {
+  LoginRequest,
+  LoginResponse,
+  Perfil,
+  RegistroRequest,
+  RegistroResponse,
+  Rol,
+} from '../api/models';
 import { TokenStorage } from './token-storage';
 
 export const URL_LOGIN = `${environment.apiUrl}/api/auth/login`;
+const URL_REGISTRO = `${environment.apiUrl}/api/auth/registro`;
 const URL_PERFIL = `${environment.apiUrl}/api/usuarios/me`;
 
 @Injectable({ providedIn: 'root' })
@@ -42,6 +50,11 @@ export class AuthService {
         return throwError(() => error);
       }),
     );
+  }
+
+  /** Crea la cuenta. No inicia sesión: para eso, llamar a `login()` con las mismas credenciales. */
+  registrar(datos: RegistroRequest): Observable<RegistroResponse> {
+    return this.http.post<RegistroResponse>(URL_REGISTRO, datos);
   }
 
   cargarPerfil(): Observable<Perfil> {

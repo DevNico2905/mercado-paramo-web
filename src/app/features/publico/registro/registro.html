@@ -1,0 +1,277 @@
+<section class="mx-auto max-w-2xl py-2 sm:py-8">
+  @if (rol() === null) {
+    <div class="motion-safe:animate-aparecer">
+      <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Paso 1 de 2</p>
+      <h1 class="mt-2 text-4xl font-semibold sm:text-5xl">Crea tu cuenta</h1>
+      <p class="mt-3 text-lg">¿Cómo quieres participar en Mercado Páramo?</p>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <button
+          type="button"
+          class="group flex flex-col items-start rounded-3xl bg-white p-6 text-left shadow-suave ring-1 ring-musgo-900/10 transition duration-300 hover:shadow-elevada hover:ring-musgo-700 motion-safe:hover:-translate-y-1"
+          (click)="elegirRol('COMPRADOR')"
+        >
+          <span
+            class="flex size-20 items-center justify-center rounded-[40%_60%_55%_45%/50%_45%_55%_50%] bg-frailejon-100 text-5xl transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-6"
+            aria-hidden="true"
+            >🧺</span
+          >
+          <span class="mt-5 font-display text-2xl font-semibold text-musgo-900"
+            >Quiero comprar</span
+          >
+          <span class="mt-1 text-roca-900/80">
+            Recibe productos frescos del páramo y paga directo a quien los cultiva.
+          </span>
+          <span class="mt-4 font-semibold text-musgo-700">Crear cuenta de comprador →</span>
+        </button>
+
+        <button
+          type="button"
+          class="group flex flex-col items-start rounded-3xl bg-white p-6 text-left shadow-suave ring-1 ring-musgo-900/10 transition duration-300 hover:shadow-elevada hover:ring-musgo-700 motion-safe:hover:-translate-y-1"
+          (click)="elegirRol('PRODUCTOR')"
+        >
+          <span
+            class="flex size-20 items-center justify-center rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-musgo-100 text-5xl transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:rotate-6"
+            aria-hidden="true"
+            >🧑‍🌾</span
+          >
+          <span class="mt-5 font-display text-2xl font-semibold text-musgo-900">
+            Soy productor de Guasca
+          </span>
+          <span class="mt-1 text-roca-900/80">
+            Vende sin intermediarios y recibe el 95&nbsp;% de cada venta.
+          </span>
+          <span class="mt-4 font-semibold text-musgo-700">Crear cuenta de productor →</span>
+        </button>
+      </div>
+
+      <p class="mt-8 text-center text-sm">
+        ¿Ya tienes cuenta?
+        <a
+          routerLink="/login"
+          queryParamsHandling="preserve"
+          class="inline-flex min-h-11 items-center font-semibold text-musgo-700 underline underline-offset-4"
+        >
+          Inicia sesión
+        </a>
+      </p>
+    </div>
+  } @else {
+    <div class="mx-auto max-w-md motion-safe:animate-aparecer">
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-musgo-700 hover:text-musgo-900"
+        (click)="volverAlPaso1()"
+      >
+        <svg lucideArrowLeft [size]="18" aria-hidden="true"></svg>
+        Cambiar tipo de cuenta
+      </button>
+
+      <div class="mt-2 rounded-2xl bg-white p-6 shadow-suave sm:p-8">
+        <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Paso 2 de 2</p>
+        <h1 class="mt-2 text-3xl font-semibold">
+          {{ rol() === 'PRODUCTOR' ? 'Tu cuenta de productor' : 'Tu cuenta de comprador' }}
+        </h1>
+        @if (rol() === 'PRODUCTOR') {
+          <p class="mt-3 rounded-xl bg-frailejon-100 p-3 text-sm text-musgo-900">
+            La fundación verificará tu cuenta antes de que puedas publicar productos.
+          </p>
+        }
+
+        <form
+          class="mt-6 flex flex-col gap-5"
+          [formGroup]="formulario"
+          (ngSubmit)="enviar()"
+          novalidate
+        >
+          @if (errorGeneral(); as mensaje) {
+            <p
+              role="alert"
+              class="flex items-start gap-2 rounded-xl bg-peligro-600/10 p-3 text-sm font-semibold text-peligro-600"
+            >
+              <svg lucideCircleAlert class="mt-0.5 shrink-0" [size]="18" aria-hidden="true"></svg>
+              {{ mensaje }}
+            </p>
+          }
+
+          <div>
+            <label for="registro-nombre" class="block text-sm font-semibold text-musgo-900">
+              Nombre completo
+            </label>
+            <input
+              id="registro-nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="name"
+              class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+              [class]="errorDe('nombre') ? 'border-peligro-600' : 'border-musgo-900/50'"
+              [attr.aria-invalid]="errorDe('nombre') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('nombre') ? 'registro-nombre-error' : null"
+            />
+            @if (errorDe('nombre'); as mensaje) {
+              <p id="registro-nombre-error" class="mt-1 text-sm font-medium text-peligro-600">
+                {{ mensaje }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="registro-email" class="block text-sm font-semibold text-musgo-900"
+              >Correo</label
+            >
+            <input
+              id="registro-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              inputmode="email"
+              class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+              [class]="errorDe('email') ? 'border-peligro-600' : 'border-musgo-900/50'"
+              [attr.aria-invalid]="errorDe('email') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('email') ? 'registro-email-error' : null"
+            />
+            @if (errorDe('email'); as mensaje) {
+              <p id="registro-email-error" class="mt-1 text-sm font-medium text-peligro-600">
+                {{ mensaje }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="registro-telefono" class="block text-sm font-semibold text-musgo-900">
+              Teléfono
+            </label>
+            <input
+              id="registro-telefono"
+              type="tel"
+              formControlName="telefono"
+              autocomplete="tel"
+              inputmode="tel"
+              class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+              [class]="errorDe('telefono') ? 'border-peligro-600' : 'border-musgo-900/50'"
+              [attr.aria-invalid]="errorDe('telefono') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('telefono') ? 'registro-telefono-error' : null"
+            />
+            @if (errorDe('telefono'); as mensaje) {
+              <p id="registro-telefono-error" class="mt-1 text-sm font-medium text-peligro-600">
+                {{ mensaje }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="registro-password" class="block text-sm font-semibold text-musgo-900">
+              Contraseña
+            </label>
+            <input
+              id="registro-password"
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+              class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+              [class]="errorDe('password') ? 'border-peligro-600' : 'border-musgo-900/50'"
+              [attr.aria-invalid]="errorDe('password') ? 'true' : null"
+              aria-describedby="registro-password-ayuda"
+            />
+            <div id="registro-password-ayuda">
+              @if (fortaleza(); as f) {
+                <div class="mt-2 flex gap-1.5" aria-hidden="true">
+                  @for (nivel of [1, 2, 3]; track nivel) {
+                    <span
+                      class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                      [class]="
+                        nivel > f.nivel
+                          ? 'bg-musgo-900/10'
+                          : f.nivel === 1
+                            ? 'bg-peligro-600'
+                            : f.nivel === 2
+                              ? 'bg-frailejon-400'
+                              : 'bg-musgo-700'
+                      "
+                    ></span>
+                  }
+                </div>
+                @if (!errorDe('password')) {
+                  <p class="mt-1 text-sm text-roca-900/80" aria-live="polite">
+                    <span class="sr-only">Fortaleza de la contraseña: </span>{{ f.etiqueta }}
+                  </p>
+                }
+              } @else {
+                <p class="mt-1 text-sm text-roca-900/80">Mínimo 8 caracteres.</p>
+              }
+              @if (errorDe('password'); as mensaje) {
+                <p class="mt-1 text-sm font-medium text-peligro-600">{{ mensaje }}</p>
+              }
+            </div>
+          </div>
+
+          @if (rol() === 'PRODUCTOR') {
+            <div>
+              <label for="registro-vereda" class="block text-sm font-semibold text-musgo-900">
+                Vereda
+              </label>
+              <input
+                id="registro-vereda"
+                type="text"
+                formControlName="vereda"
+                class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+                [class]="errorDe('vereda') ? 'border-peligro-600' : 'border-musgo-900/50'"
+                [attr.aria-invalid]="errorDe('vereda') ? 'true' : null"
+                [attr.aria-describedby]="errorDe('vereda') ? 'registro-vereda-error' : null"
+              />
+              @if (errorDe('vereda'); as mensaje) {
+                <p id="registro-vereda-error" class="mt-1 text-sm font-medium text-peligro-600">
+                  {{ mensaje }}
+                </p>
+              }
+            </div>
+
+            <div>
+              <label for="registro-descripcion" class="block text-sm font-semibold text-musgo-900">
+                Cuéntanos qué produces
+                <span class="font-normal text-roca-900/75">(opcional)</span>
+              </label>
+              <textarea
+                id="registro-descripcion"
+                formControlName="descripcion"
+                rows="3"
+                class="mt-1 block w-full rounded-xl border bg-white px-4 py-3 text-base"
+                [class]="errorDe('descripcion') ? 'border-peligro-600' : 'border-musgo-900/50'"
+                [attr.aria-invalid]="errorDe('descripcion') ? 'true' : null"
+                [attr.aria-describedby]="
+                  errorDe('descripcion') ? 'registro-descripcion-error' : null
+                "
+              ></textarea>
+              @if (errorDe('descripcion'); as mensaje) {
+                <p
+                  id="registro-descripcion-error"
+                  class="mt-1 text-sm font-medium text-peligro-600"
+                >
+                  {{ mensaje }}
+                </p>
+              }
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold text-white transition hover:bg-musgo-900 active:scale-[0.98] disabled:opacity-70"
+            [disabled]="enviando()"
+          >
+            @if (enviando()) {
+              <svg
+                lucideLoaderCircle
+                class="motion-safe:animate-spin"
+                [size]="20"
+                aria-hidden="true"
+              ></svg>
+              Creando tu cuenta…
+            } @else {
+              Crear cuenta
+            }
+          </button>
+        </form>
+      </div>
+    </div>
+  }
+</section>

@@ -1,9 +1,14 @@
 <section class="mx-auto max-w-md py-4 sm:py-10">
-  <div class="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgb(30_59_45/0.08)] sm:p-8">
+  <div class="rounded-2xl bg-white p-6 shadow-suave sm:p-8">
     <h1 class="text-3xl font-semibold">Inicia sesión</h1>
     <p class="mt-2">Entra para hacer pedidos o atender los que recibes.</p>
 
-    <form class="mt-6 flex flex-col gap-5" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+    <form
+      class="mt-6 flex flex-col gap-5"
+      [formGroup]="formulario"
+      (ngSubmit)="enviar()"
+      novalidate
+    >
       @if (errorGeneral(); as mensaje) {
         <p
           role="alert"
@@ -28,7 +33,9 @@
           [attr.aria-describedby]="errorDe('email') ? 'login-email-error' : null"
         />
         @if (errorDe('email'); as mensaje) {
-          <p id="login-email-error" class="mt-1 text-sm font-medium text-peligro-600">{{ mensaje }}</p>
+          <p id="login-email-error" class="mt-1 text-sm font-medium text-peligro-600">
+            {{ mensaje }}
+          </p>
         }
       </div>
 
@@ -59,7 +66,12 @@
         [disabled]="enviando()"
       >
         @if (enviando()) {
-          <svg lucideLoaderCircle class="motion-safe:animate-spin" [size]="20" aria-hidden="true"></svg>
+          <svg
+            lucideLoaderCircle
+            class="motion-safe:animate-spin"
+            [size]="20"
+            aria-hidden="true"
+          ></svg>
           Entrando…
         } @else {
           Entrar
@@ -71,6 +83,7 @@
       ¿Aún no tienes cuenta?
       <a
         routerLink="/registro"
+        queryParamsHandling="preserve"
         class="inline-flex min-h-11 items-center font-semibold text-musgo-700 underline underline-offset-4"
       >
         Crea una cuenta
