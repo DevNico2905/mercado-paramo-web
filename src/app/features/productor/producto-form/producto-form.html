@@ -1,0 +1,236 @@
+<a
+  routerLink="/productor/productos"
+  class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-musgo-700 hover:text-musgo-900"
+>
+  <svg lucideArrowLeft [size]="18" aria-hidden="true"></svg>
+  Volver a mis productos
+</a>
+
+@switch (carga().estado) {
+  @case ('cargando') {
+    <p class="sr-only" role="status">Cargando…</p>
+    <div class="mt-2 flex flex-col gap-4" aria-hidden="true">
+      <app-skeleton class="h-10 w-2/3" />
+      <app-skeleton class="h-96 rounded-2xl" />
+    </div>
+  }
+  @case ('no-existe') {
+    <app-empty-state
+      emoji="🍂"
+      titulo="No encontramos este producto"
+      mensaje="Puede que ya no esté entre tus productos."
+    >
+      <a
+        routerLink="/productor/productos"
+        class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+      >
+        Ver mis productos →
+      </a>
+    </app-empty-state>
+  }
+  @case ('listo') {
+    <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">
+      {{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}
+    </h1>
+    @if (bloqueado()) {
+      <app-verificacion-banner class="mt-4" [estado]="estadoVerificacion() ?? 'PENDIENTE'" />
+    }
+
+    <form
+      class="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr] lg:items-start"
+      [formGroup]="formulario"
+      (ngSubmit)="guardar()"
+      novalidate
+    >
+      <div class="flex flex-col gap-6 rounded-2xl bg-white p-5 shadow-suave sm:p-6">
+        <div>
+          <label for="producto-nombre" class="block font-semibold text-musgo-900">
+            ¿Qué vendes?
+          </label>
+          <input
+            id="producto-nombre"
+            type="text"
+            formControlName="nombre"
+            maxlength="100"
+            placeholder="Por ejemplo: Queso campesino"
+            class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+            [class]="errorDe('nombre') ? 'border-peligro-600' : 'border-musgo-900/50'"
+            [attr.aria-invalid]="errorDe('nombre') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('nombre') ? 'producto-nombre-error' : null"
+          />
+          @if (errorDe('nombre'); as mensaje) {
+            <p id="producto-nombre-error" class="mt-1 text-sm font-medium text-peligro-600">
+              {{ mensaje }}
+            </p>
+          }
+        </div>
+
+        <fieldset>
+          <legend class="font-semibold text-musgo-900">¿De qué tipo es?</legend>
+          <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            @for (opcion of opcionesCategoria(); track opcion.id) {
+              <label
+                class="flex min-h-14 cursor-pointer items-center gap-2 rounded-xl px-3 py-2 font-semibold ring-1 transition ring-inset has-[:checked]:bg-musgo-700 has-[:checked]:text-white has-[:checked]:ring-musgo-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-musgo-700"
+                [class]="
+                  errorDe('categoriaId')
+                    ? 'ring-peligro-600'
+                    : 'bg-white text-musgo-900 ring-musgo-900/20 hover:bg-musgo-100'
+                "
+              >
+                <input
+                  type="radio"
+                  class="sr-only"
+                  formControlName="categoriaId"
+                  [value]="opcion.id"
+                />
+                <span class="text-2xl leading-none" aria-hidden="true">{{ opcion.emoji }}</span>
+                <span class="text-sm leading-tight">{{ opcion.nombre }}</span>
+              </label>
+            }
+          </div>
+          @if (errorDe('categoriaId'); as mensaje) {
+            <p class="mt-1 text-sm font-medium text-peligro-600">{{ mensaje }}</p>
+          }
+        </fieldset>
+
+        <div>
+          <label for="producto-unidad" class="block font-semibold text-musgo-900">
+            ¿Cómo lo vendes?
+          </label>
+          <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Unidades sugeridas">
+            @for (unidad of unidades; track unidad) {
+              <button
+                type="button"
+                class="min-h-11 rounded-full px-4 text-sm font-semibold ring-1 transition ring-inset"
+                [class]="
+                  formulario.controls.unidad.value === unidad
+                    ? 'bg-musgo-700 text-white ring-musgo-700'
+                    : 'bg-white text-musgo-900 ring-musgo-900/20 hover:bg-musgo-100'
+                "
+                [attr.aria-pressed]="formulario.controls.unidad.value === unidad"
+                (click)="elegirUnidad(unidad)"
+              >
+                Por {{ unidad }}
+              </button>
+            }
+          </div>
+          <input
+            id="producto-unidad"
+            type="text"
+            formControlName="unidad"
+            maxlength="20"
+            placeholder="U otra: frasco, bulto…"
+            class="mt-2 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+            [class]="errorDe('unidad') ? 'border-peligro-600' : 'border-musgo-900/50'"
+            [attr.aria-invalid]="errorDe('unidad') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('unidad') ? 'producto-unidad-error' : null"
+          />
+          @if (errorDe('unidad'); as mensaje) {
+            <p id="producto-unidad-error" class="mt-1 text-sm font-medium text-peligro-600">
+              {{ mensaje }}
+            </p>
+          }
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="producto-precio" class="block font-semibold text-musgo-900">
+              Precio por {{ formulario.controls.unidad.value.trim() || 'unidad' }}
+            </label>
+            <div class="relative mt-1">
+              <span
+                class="pointer-events-none absolute inset-y-0 left-4 flex items-center font-semibold text-roca-900/70"
+                aria-hidden="true"
+                >$</span
+              >
+              <input
+                id="producto-precio"
+                type="number"
+                formControlName="precio"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="12000"
+                class="block min-h-12 w-full rounded-xl border bg-white pr-4 pl-8 text-base"
+                [class]="errorDe('precio') ? 'border-peligro-600' : 'border-musgo-900/50'"
+                [attr.aria-invalid]="errorDe('precio') ? 'true' : null"
+                aria-describedby="producto-precio-ayuda"
+              />
+            </div>
+            <p
+              id="producto-precio-ayuda"
+              class="mt-1 text-sm"
+              [class]="errorDe('precio') ? 'font-medium text-peligro-600' : 'text-roca-900/80'"
+            >
+              {{ errorDe('precio') ?? 'En pesos, sin puntos.' }}
+            </p>
+          </div>
+
+          <div>
+            <label for="producto-stock" class="block font-semibold text-musgo-900">
+              ¿Cuántos tienes para vender?
+            </label>
+            <input
+              id="producto-stock"
+              type="number"
+              formControlName="stock"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              placeholder="10"
+              class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
+              [class]="errorDe('stock') ? 'border-peligro-600' : 'border-musgo-900/50'"
+              [attr.aria-invalid]="errorDe('stock') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('stock') ? 'producto-stock-error' : null"
+            />
+            @if (errorDe('stock'); as mensaje) {
+              <p id="producto-stock-error" class="mt-1 text-sm font-medium text-peligro-600">
+                {{ mensaje }}
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <aside class="lg:sticky lg:top-24" aria-labelledby="vista-previa-titulo">
+        <h2
+          id="vista-previa-titulo"
+          class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase font-sans"
+        >
+          Así lo verán los compradores
+        </h2>
+        <div class="mx-auto mt-2 max-w-64 lg:max-w-72" aria-hidden="true">
+          <app-product-card [producto]="vistaPrevia()" [mostrarAgregar]="false" />
+        </div>
+
+        @if (errorGeneral(); as mensaje) {
+          <p
+            role="alert"
+            class="mt-4 flex items-start gap-2 rounded-xl bg-peligro-600/10 p-3 text-sm font-semibold text-peligro-600"
+          >
+            <svg lucideCircleAlert class="mt-0.5 shrink-0" [size]="18" aria-hidden="true"></svg>
+            {{ mensaje }}
+          </p>
+        }
+
+        <button
+          type="submit"
+          class="mt-5 flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold text-white transition hover:bg-musgo-900 active:scale-[0.98] disabled:bg-roca-900/10 disabled:text-roca-900/70"
+          [disabled]="enviando() || bloqueado()"
+        >
+          @if (enviando()) {
+            <svg
+              lucideLoaderCircle
+              class="motion-safe:animate-spin"
+              [size]="20"
+              aria-hidden="true"
+            ></svg>
+            Guardando…
+          } @else {
+            {{ esEdicion() ? 'Guardar cambios' : 'Publicar producto' }}
+          }
+        </button>
+      </aside>
+    </form>
+  }
+}
