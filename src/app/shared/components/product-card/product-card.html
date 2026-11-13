@@ -57,7 +57,9 @@
       ></svg>
       <span class="break-words">
         <span class="font-semibold text-roca-900">{{ p.productorNombre }}</span>
-        · {{ p.vereda }}
+        @if (p.vereda) {
+          · {{ p.vereda }}
+        }
       </span>
     </p>
 
