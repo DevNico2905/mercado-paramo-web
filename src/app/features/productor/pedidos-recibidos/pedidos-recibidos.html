@@ -1,0 +1,316 @@
+<header>
+  <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Tus ventas</p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">Pedidos recibidos</h1>
+</header>
+
+@let f = filtros();
+<nav class="mt-4" aria-label="Tipo de pedidos">
+  <ul class="grid grid-cols-3 gap-1 rounded-2xl bg-white p-1 shadow-suave">
+    @for (opcion of pestanas; track opcion.valor) {
+      @let activa = pestanaActual() === opcion.valor;
+      @let cantidad = grupos()[opcion.valor].length;
+      <li>
+        <a
+          routerLink="."
+          [queryParams]="{
+            pestana: opcion.valor === 'por-atender' ? null : opcion.valor,
+            estado: null,
+          }"
+          queryParamsHandling="merge"
+          class="flex min-h-14 flex-col items-center justify-center rounded-xl px-1 text-center text-sm font-semibold transition sm:flex-row sm:gap-2 sm:text-base"
+          [class]="activa ? 'bg-musgo-700 text-white' : 'text-musgo-900 hover:bg-musgo-100'"
+          [attr.aria-current]="activa ? 'page' : null"
+        >
+          {{ opcion.etiqueta }}
+          @if (carga().estado === 'listo') {
+            <span
+              class="mt-0.5 min-w-6 rounded-full px-2 py-0.5 text-xs font-bold sm:mt-0"
+              [class]="
+                opcion.valor === 'por-atender' && cantidad > 0
+                  ? 'bg-frailejon-400 text-musgo-900'
+                  : activa
+                    ? 'bg-white/20 text-white'
+                    : 'bg-musgo-100 text-musgo-900'
+              "
+            >
+              {{ cantidad
+              }}<span class="sr-only"> {{ cantidad === 1 ? 'pedido' : 'pedidos' }}</span>
+            </span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<details
+  class="group mt-3 rounded-2xl bg-white/60 ring-1 ring-musgo-900/10 ring-inset"
+  [open]="hayFechas() || f.orden !== 'recientes'"
+>
+  <summary
+    class="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-semibold text-musgo-700 [&::-webkit-details-marker]:hidden"
+  >
+    Buscar por fechas u ordenar
+    <span class="transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+  </summary>
+  <div class="grid grid-cols-2 gap-3 px-4 pb-4 sm:flex sm:flex-wrap sm:items-end">
+    <div>
+      <label
+        for="recibidos-desde"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+        >Desde</label
+      >
+      <input
+        id="recibidos-desde"
+        type="date"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-44"
+        [value]="f.desde ?? ''"
+        [max]="f.hasta ?? ''"
+        (change)="filtrar({ desde: $any($event.target).value || null })"
+      />
+    </div>
+    <div>
+      <label
+        for="recibidos-hasta"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+        >Hasta</label
+      >
+      <input
+        id="recibidos-hasta"
+        type="date"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-44"
+        [value]="f.hasta ?? ''"
+        [min]="f.desde ?? ''"
+        (change)="filtrar({ hasta: $any($event.target).value || null })"
+      />
+    </div>
+    <div class="col-span-2 sm:col-span-1">
+      <label
+        for="recibidos-orden"
+        class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
+        >Ordenar por</label
+      >
+      <select
+        id="recibidos-orden"
+        class="mt-1 block min-h-11 w-full rounded-xl border border-musgo-900/50 bg-white px-3 text-sm font-semibold text-musgo-900 sm:w-48"
+        (change)="ordenar($any($event.target).value)"
+      >
+        @for (opcion of ordenes; track opcion.valor) {
+          <option [value]="opcion.valor" [selected]="opcion.valor === f.orden">
+            {{ opcion.etiqueta }}
+          </option>
+        }
+      </select>
+    </div>
+    @if (hayFechas()) {
+      <button
+        type="button"
+        class="col-span-2 min-h-11 rounded-xl px-3 text-sm font-semibold text-musgo-700 underline underline-offset-4 hover:text-musgo-900 sm:col-span-1"
+        (click)="filtrar({ desde: null, hasta: null })"
+      >
+        Quitar fechas
+      </button>
+    }
+  </div>
+  @if (rangoInvalido()) {
+    <p role="alert" class="px-4 pb-4 text-sm font-medium text-peligro-600">
+      La fecha inicial no puede ser posterior a la final.
+    </p>
+  }
+</details>
+
+@if (pestanaActual() === 'historial') {
+  <ul class="mt-3 flex flex-wrap gap-2" aria-label="Filtrar el historial">
+    <li>
+      <a
+        routerLink="."
+        [queryParams]="{ estado: null }"
+        queryParamsHandling="merge"
+        class="flex min-h-11 items-center rounded-full px-4 text-sm font-semibold ring-1 transition ring-inset"
+        [class]="
+          estadoHistorial() === null
+            ? 'bg-musgo-900 text-white ring-musgo-900'
+            : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+        "
+        [attr.aria-current]="estadoHistorial() === null ? 'true' : null"
+      >
+        Todos
+      </a>
+    </li>
+    @for (opcion of estadosHistorial; track opcion.valor) {
+      <li>
+        <a
+          routerLink="."
+          [queryParams]="{ estado: opcion.valor }"
+          queryParamsHandling="merge"
+          class="flex min-h-11 items-center rounded-full px-4 text-sm font-semibold ring-1 transition ring-inset"
+          [class]="
+            estadoHistorial() === opcion.valor
+              ? 'bg-musgo-900 text-white ring-musgo-900'
+              : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+          "
+          [attr.aria-current]="estadoHistorial() === opcion.valor ? 'true' : null"
+        >
+          {{ opcion.etiqueta }}
+        </a>
+      </li>
+    }
+  </ul>
+}
+
+<section class="mt-5" [attr.aria-busy]="carga().estado === 'cargando'" aria-label="Pedidos">
+  @let c = carga();
+  @switch (c.estado) {
+    @case ('cargando') {
+      <p class="sr-only" role="status">Cargando pedidos…</p>
+      <ul class="grid gap-4 md:grid-cols-2" aria-hidden="true">
+        @for (esqueleto of esqueletos; track esqueleto) {
+          <li class="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-suave">
+            <app-skeleton class="h-6 w-1/2" />
+            <app-skeleton class="h-12 rounded-xl" />
+            <app-skeleton class="h-20 rounded-xl" />
+            <app-skeleton class="h-13 rounded-xl" />
+          </li>
+        }
+      </ul>
+    }
+    @case ('error') {
+      <app-empty-state
+        emoji="🌧️"
+        titulo="No pudimos cargar tus pedidos"
+        mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+      >
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+          (click)="recargar()"
+        >
+          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          Intentar de nuevo
+        </button>
+      </app-empty-state>
+    }
+    @case ('listo') {
+      @if (visibles().length === 0) {
+        <app-empty-state
+          [emoji]="vacio().emoji"
+          [titulo]="hayFechas() || estadoHistorial() ? 'Ningún pedido coincide' : vacio().titulo"
+          [mensaje]="
+            hayFechas() || estadoHistorial()
+              ? 'Prueba con otras fechas u otro filtro.'
+              : vacio().mensaje
+          "
+        />
+      } @else {
+        <ul class="grid gap-4 md:grid-cols-2">
+          @for (pedido of visibles(); track pedido.id) {
+            @let acciones = accionesDe(pedido.estado);
+            @let ocupado = procesando() === pedido.id;
+            <li class="motion-safe:animate-aparecer">
+              <article
+                class="flex h-full flex-col rounded-2xl bg-white p-5 shadow-suave"
+                [attr.aria-labelledby]="'recibido-' + pedido.id"
+              >
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h2 [id]="'recibido-' + pedido.id" class="text-2xl font-semibold">
+                      {{ pedido.compradorNombre }}
+                    </h2>
+                    <p class="text-sm text-roca-900/80">
+                      Pedido n.º {{ pedido.id }} ·
+                      <time [attr.datetime]="pedido.fecha">{{
+                        pedido.fecha | date: "d 'de' MMMM, h:mm a"
+                      }}</time>
+                    </p>
+                  </div>
+                  <app-status-badge [estado]="pedido.estado" />
+                </div>
+
+                <a
+                  [href]="'tel:' + pedido.compradorTelefono"
+                  class="mt-4 flex min-h-12 items-center gap-3 rounded-xl bg-musgo-100 px-4 font-semibold text-musgo-900 hover:bg-musgo-700 hover:text-white"
+                  [attr.aria-label]="
+                    'Llamar a ' + pedido.compradorNombre + ' al ' + pedido.compradorTelefono
+                  "
+                >
+                  <svg lucidePhone [size]="20" aria-hidden="true"></svg>
+                  Llamar · {{ pedido.compradorTelefono }}
+                </a>
+                <p class="mt-3 flex items-start gap-2">
+                  <svg
+                    lucideMapPin
+                    class="mt-1 shrink-0 text-tierra-600"
+                    [size]="18"
+                    aria-hidden="true"
+                  ></svg>
+                  <span><span class="sr-only">Dirección: </span>{{ pedido.direccionEntrega }}</span>
+                </p>
+
+                <ul
+                  class="mt-4 divide-y divide-musgo-900/10 border-y border-musgo-900/10"
+                  aria-label="Productos"
+                >
+                  @for (detalle of pedido.detalles; track detalle.productoId) {
+                    <li class="flex items-baseline justify-between gap-3 py-2">
+                      <span>
+                        <span class="font-display text-lg font-semibold text-musgo-900">{{
+                          detalle.cantidad
+                        }}</span>
+                        {{ detalle.unidad }} ·
+                        <span class="font-semibold">{{ detalle.productoNombre }}</span>
+                      </span>
+                      <span class="tabular-nums text-roca-900/80">{{
+                        detalle.subtotal | cop
+                      }}</span>
+                    </li>
+                  }
+                </ul>
+                <p class="mt-2 flex justify-between text-sm text-roca-900/80">
+                  <span>Total que paga el comprador</span>
+                  <span class="tabular-nums">{{ pedido.total | cop }}</span>
+                </p>
+
+                <div
+                  class="mt-3 flex items-center justify-between gap-3 rounded-xl bg-frailejon-100 px-4 py-3"
+                >
+                  <span class="font-semibold text-musgo-900">Tú recibes</span>
+                  <span class="font-display text-3xl font-semibold text-musgo-900">{{
+                    pedido.montoProductor | cop
+                  }}</span>
+                </div>
+
+                @if (acciones.length > 0) {
+                  <div class="mt-auto flex flex-col gap-2 pt-4">
+                    @for (accion of acciones; track accion.estado) {
+                      <button
+                        type="button"
+                        class="flex items-center justify-center gap-2 rounded-xl px-5 font-semibold transition active:scale-[0.98] disabled:opacity-70"
+                        [class]="
+                          accion.estilo === 'principal'
+                            ? 'min-h-14 bg-musgo-700 text-lg text-white hover:bg-musgo-900'
+                            : 'min-h-12 text-peligro-600 ring-1 ring-peligro-600/40 ring-inset hover:bg-peligro-600/10'
+                        "
+                        [disabled]="ocupado"
+                        (click)="ejecutar(pedido, accion)"
+                      >
+                        @if (ocupado && accion.estilo === 'principal') {
+                          <svg
+                            lucideLoaderCircle
+                            class="motion-safe:animate-spin"
+                            [size]="20"
+                            aria-hidden="true"
+                          ></svg>
+                        }
+                        {{ accion.etiqueta }}
+                      </button>
+                    }
+                  </div>
+                }
+              </article>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
