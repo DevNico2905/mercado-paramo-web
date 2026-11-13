@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/productor/productos/{id}/reactivar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["reactivar"];
+        trace?: never;
+    };
     "/api/productor/pedidos/{id}/estado": {
         parameters: {
             query?: never;
@@ -407,6 +423,7 @@ export interface components {
             rol?: "ADMIN" | "PRODUCTOR" | "COMPRADOR";
             /** @enum {string} */
             estadoVerificacion?: "PENDIENTE" | "VERIFICADO" | "RECHAZADO";
+            vereda?: string;
         };
         ReporteVentasResponse: {
             /** Format: date */
@@ -638,6 +655,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["LoginResponse"];
+                };
+            };
+        };
+    };
+    reactivar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProductoResponse"];
                 };
             };
         };
