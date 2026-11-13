@@ -1,0 +1,201 @@
+<header>
+  <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Tus ventas</p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">Reporte de ventas</h1>
+</header>
+
+<nav class="mt-4" aria-label="Periodo del reporte">
+  <ul class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+    @for (opcion of rangos; track opcion.valor) {
+      @let activo = rangoActual() === opcion.valor;
+      <li>
+        <a
+          routerLink="."
+          [queryParams]="
+            opcion.valor === 'personalizado'
+              ? { rango: 'personalizado' }
+              : { rango: opcion.valor === '30d' ? null : opcion.valor, desde: null, hasta: null }
+          "
+          [queryParamsHandling]="opcion.valor === 'personalizado' ? 'merge' : ''"
+          class="flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold whitespace-nowrap ring-1 transition ring-inset"
+          [class]="
+            activo
+              ? 'bg-musgo-700 text-white ring-musgo-700'
+              : 'bg-white text-musgo-900 ring-musgo-900/15 hover:bg-musgo-100'
+          "
+          [attr.aria-current]="activo ? 'true' : null"
+        >
+          {{ opcion.etiqueta }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+@if (rangoActual() === 'personalizado') {
+  <div
+    class="mt-3 grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-suave sm:flex sm:items-end"
+  >
+    <div>
+      <label for="reporte-desde" class="block text-sm font-semibold text-musgo-900">Desde</label>
+      <input
+        id="reporte-desde"
+        type="date"
+        class="mt-1 block min-h-12 w-full rounded-xl border border-musgo-900/50 bg-white px-3 font-semibold text-musgo-900 sm:w-48"
+        [value]="desde() ?? ''"
+        [max]="hasta() || hoy"
+        (change)="elegirFecha('desde', $any($event.target).value)"
+      />
+    </div>
+    <div>
+      <label for="reporte-hasta" class="block text-sm font-semibold text-musgo-900">Hasta</label>
+      <input
+        id="reporte-hasta"
+        type="date"
+        class="mt-1 block min-h-12 w-full rounded-xl border border-musgo-900/50 bg-white px-3 font-semibold text-musgo-900 sm:w-48"
+        [value]="hasta() ?? ''"
+        [min]="desde() ?? ''"
+        [max]="hoy"
+        (change)="elegirFecha('hasta', $any($event.target).value)"
+      />
+    </div>
+  </div>
+}
+
+<section
+  class="mt-6"
+  [attr.aria-busy]="carga().estado === 'cargando'"
+  aria-label="Resultados del periodo"
+>
+  @let c = carga();
+  @switch (c.estado) {
+    @case ('cargando') {
+      <p class="sr-only" role="status">Cargando tu reporte…</p>
+      <div class="flex flex-col gap-4" aria-hidden="true">
+        <app-skeleton class="h-5 w-64" />
+        <div class="grid gap-3 sm:grid-cols-3">
+          <app-skeleton class="h-28 rounded-2xl" />
+          <app-skeleton class="h-28 rounded-2xl" />
+          <app-skeleton class="h-28 rounded-2xl" />
+        </div>
+        <app-skeleton class="h-72 rounded-3xl" />
+      </div>
+    }
+    @case ('incompleto') {
+      <app-empty-state
+        emoji="📅"
+        titulo="Elige las fechas"
+        mensaje="Escoge el día de inicio y el día final para ver tus ventas."
+      />
+    }
+    @case ('error') {
+      <app-empty-state
+        emoji="🌧️"
+        titulo="No pudimos cargar tu reporte"
+        mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+      >
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+          (click)="recargar()"
+        >
+          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          Intentar de nuevo
+        </button>
+      </app-empty-state>
+    }
+    @case ('listo') {
+      @let r = c.reporte;
+      <p class="text-roca-900/80">
+        Del {{ r.desde | date: "d 'de' MMMM" }} al {{ r.hasta | date: "d 'de' MMMM 'de' y" }}
+      </p>
+
+      @if (r.participacionPorcentaje === null) {
+        <app-empty-state
+          emoji="🌾"
+          titulo="Aún no tienes ventas entregadas en este periodo"
+          mensaje="Cuando entregues pedidos, aquí verás cuánto vendiste y cuánto recibiste."
+        >
+          <a
+            routerLink="/productor/pedidos"
+            class="inline-flex min-h-12 items-center rounded-xl bg-musgo-700 px-6 font-semibold text-white hover:bg-musgo-900"
+          >
+            Ver mis pedidos →
+          </a>
+        </app-empty-state>
+      } @else {
+        <dl class="mt-3 grid gap-3 sm:grid-cols-3">
+          <div
+            class="rounded-2xl bg-frailejon-100 p-5 ring-1 ring-frailejon-400 ring-inset motion-safe:animate-aparecer sm:order-last"
+          >
+            <dt class="font-semibold text-musgo-900">Recibiste</dt>
+            <dd class="mt-1 font-display text-4xl font-semibold text-musgo-900 sm:text-5xl">
+              {{ r.ingresoNeto | cop }}
+            </dd>
+          </div>
+          <div class="rounded-2xl bg-white p-5 shadow-suave motion-safe:animate-aparecer">
+            <dt class="font-semibold text-roca-900/80">Pedidos entregados</dt>
+            <dd class="mt-1 font-display text-4xl font-semibold text-musgo-900 sm:text-5xl">
+              {{ r.pedidosEntregados }}
+            </dd>
+          </div>
+          <div class="rounded-2xl bg-white p-5 shadow-suave motion-safe:animate-aparecer">
+            <dt class="font-semibold text-roca-900/80">Total vendido</dt>
+            <dd class="mt-1 font-display text-4xl font-semibold text-musgo-900 sm:text-5xl">
+              {{ r.totalVendido | cop }}
+            </dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
+          <app-impact-meter
+            perspectiva="productor"
+            [total]="r.totalVendido"
+            [montoProductor]="r.ingresoNeto"
+            [porcentaje]="r.participacionPorcentaje"
+          />
+
+          <section
+            class="rounded-2xl bg-white p-5 shadow-suave sm:p-6"
+            aria-labelledby="ventas-producto"
+          >
+            <h2 id="ventas-producto" class="text-xl font-semibold">Lo que más vendiste</h2>
+            @if (productos().length === 0) {
+              <p class="mt-3 text-roca-900/80">No hay ventas por producto en este periodo.</p>
+            } @else {
+              <ol class="mt-4 flex flex-col gap-4">
+                @for (venta of productos(); track venta.productoId) {
+                  <li>
+                    <div class="flex items-baseline justify-between gap-3">
+                      <span class="min-w-0">
+                        <span class="font-semibold break-words text-musgo-900">{{
+                          venta.nombre
+                        }}</span>
+                        <span class="block text-sm text-roca-900/80">
+                          {{ venta.cantidadVendida }} {{ venta.unidad }}
+                        </span>
+                      </span>
+                      <span
+                        class="shrink-0 font-display text-lg font-semibold tabular-nums text-musgo-900"
+                      >
+                        {{ venta.totalVendido | cop }}
+                      </span>
+                    </div>
+                    <div
+                      class="mt-1.5 h-3 overflow-hidden rounded-full bg-musgo-100"
+                      aria-hidden="true"
+                    >
+                      <div
+                        class="h-full origin-left rounded-full bg-musgo-700 motion-safe:animate-crecer"
+                        [style.width.%]="venta.ancho"
+                      ></div>
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </section>
+        </div>
+      }
+    }
+  }
+</section>
