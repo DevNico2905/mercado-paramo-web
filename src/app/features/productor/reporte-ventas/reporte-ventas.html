@@ -171,7 +171,8 @@
                           venta.nombre
                         }}</span>
                         <span class="block text-sm text-roca-900/80">
-                          {{ venta.cantidadVendida }} {{ venta.unidad }}
+                          {{ venta.cantidadVendida }}
+                          {{ venta.unidad | unidad: venta.cantidadVendida }}
                         </span>
                       </span>
                       <span

@@ -144,7 +144,8 @@
                       <span
                         [class]="producto.stock <= stockBajo ? 'font-semibold text-tierra-600' : ''"
                       >
-                        Quedan {{ producto.stock }}
+                        {{ producto.stock === 1 ? 'Queda' : 'Quedan' }} {{ producto.stock }}
+                        {{ producto.unidad | unidad: producto.stock }}
                       </span>
                     }
                     · {{ producto.categoriaNombre }}

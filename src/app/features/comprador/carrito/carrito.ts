@@ -21,6 +21,7 @@ import { OrderTimeline } from '../../../shared/components/order-timeline/order-t
 import { QuantityStepper } from '../../../shared/components/quantity-stepper/quantity-stepper';
 import { mensajeDeError } from '../../../shared/forms/errores';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 
 const DIRECCION_MAXIMA = 200;
 
@@ -32,6 +33,7 @@ const MENSAJES_DIRECCION = {
 @Component({
   selector: 'app-carrito',
   imports: [
+    UnidadPipe,
     ReactiveFormsModule,
     RouterLink,
     CategoryArt,

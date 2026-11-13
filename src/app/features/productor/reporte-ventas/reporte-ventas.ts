@@ -13,6 +13,7 @@ import { ImpactMeter } from '../../../shared/components/impact-meter/impact-mete
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
 import { RANGOS, fechaLocal, fechasDe, leerRango } from './rangos';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 
 type Carga =
   | { estado: 'cargando' }
@@ -22,7 +23,16 @@ type Carga =
 
 @Component({
   selector: 'app-reporte-ventas',
-  imports: [DatePipe, RouterLink, CopPipe, EmptyState, ImpactMeter, Skeleton, LucideDynamicIcon],
+  imports: [
+    UnidadPipe,
+    DatePipe,
+    RouterLink,
+    CopPipe,
+    EmptyState,
+    ImpactMeter,
+    Skeleton,
+    LucideDynamicIcon,
+  ],
   templateUrl: './reporte-ventas.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

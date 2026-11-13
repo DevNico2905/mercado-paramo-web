@@ -34,6 +34,20 @@
     <div
       class="mt-5 rounded-2xl bg-white p-5 shadow-suave motion-safe:animate-aparecer motion-safe:[animation-delay:200ms] sm:p-6"
     >
+      <h2 class="font-sans text-xs font-bold tracking-wider text-tierra-600 uppercase">
+        Tu pedido
+      </h2>
+      <ul class="mt-2 mb-4 divide-y divide-musgo-900/10 border-y border-musgo-900/10">
+        @for (detalle of pedido.detalles; track detalle.productoId) {
+          <li class="flex items-baseline justify-between gap-3 py-2">
+            <span>
+              {{ detalle.cantidad }} {{ detalle.unidad | unidad: detalle.cantidad }} ·
+              <span class="font-semibold text-musgo-900">{{ detalle.productoNombre }}</span>
+            </span>
+            <span class="tabular-nums">{{ detalle.subtotal | cop }}</span>
+          </li>
+        }
+      </ul>
       <dl class="flex flex-col gap-2 text-sm">
         <div class="flex justify-between gap-4">
           <dt>Total del pedido</dt>
@@ -128,13 +142,19 @@
                 [etiqueta]="'Cantidad de ' + item.nombre"
                 (cambio)="cart.cambiarCantidad(item.productoId, $event)"
               />
-              <p class="font-display text-xl font-semibold text-musgo-900">
-                {{ item.precio * item.cantidad | cop }}
+              <p class="text-right">
+                <span class="block text-sm text-roca-900/80">
+                  {{ item.cantidad }} {{ item.unidad | unidad: item.cantidad }}
+                </span>
+                <span class="font-display text-xl font-semibold text-musgo-900">
+                  {{ item.precio * item.cantidad | cop }}
+                </span>
               </p>
             </div>
             @if (item.cantidad >= item.stock) {
               <p class="mt-1 text-xs font-semibold text-tierra-600">
-                Es todo lo que hay disponible ({{ item.stock }}).
+                Es todo lo que hay disponible: {{ item.stock }}
+                {{ item.unidad | unidad: item.stock }}.
               </p>
             }
           </div>

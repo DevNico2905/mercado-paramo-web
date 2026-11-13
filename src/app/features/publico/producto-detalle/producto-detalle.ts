@@ -29,6 +29,7 @@ import { ImpactMeter } from '../../../shared/components/impact-meter/impact-mete
 import { QuantityStepper } from '../../../shared/components/quantity-stepper/quantity-stepper';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 
 type Carga =
   | { estado: 'cargando' }
@@ -41,6 +42,7 @@ const STOCK_BAJO = 5;
 @Component({
   selector: 'app-producto-detalle',
   imports: [
+    UnidadPipe,
     RouterLink,
     CategoryArt,
     EmptyState,

@@ -103,6 +103,7 @@ describe('Carrito', () => {
     expect(texto()).toContain('$24.000');
     expect(texto()).toContain('$22.800 llegan a Pedro');
     expect(texto()).toContain('Pago contra entrega');
+    expect(texto()).toContain('2 libras');
   });
 
   it('exige la dirección de entrega antes de enviar', () => {
@@ -167,7 +168,7 @@ describe('Carrito', () => {
 
     expect(texto()).toContain('Stock insuficiente para Queso campesino');
     expect(cart.cantidadDe(1)).toBe(1);
-    expect(texto()).toContain('Es todo lo que hay disponible (1).');
+    expect(texto()).toContain('Es todo lo que hay disponible: 1 libra.');
     expect(boton()?.disabled).toBe(false);
   });
 });

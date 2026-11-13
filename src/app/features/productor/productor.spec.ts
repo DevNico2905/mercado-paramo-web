@@ -313,6 +313,7 @@ describe('pantallas del productor', () => {
       expect(texto(fixture)).toContain('Por atender 1');
       expect(texto(fixture)).toContain('En curso 1');
       expect(texto(fixture)).toMatch(/Tú recibes ?\$22\.800/);
+      expect(texto(fixture)).toContain('2 libras · Queso campesino');
       expect(
         (fixture.nativeElement as HTMLElement).querySelector('a[href="tel:3109876543"]'),
       ).not.toBeNull();
@@ -408,6 +409,8 @@ describe('pantallas del productor', () => {
 
       expect(texto(fixture)).toContain('Recibiste $57.000');
       expect(texto(fixture)).toContain('Pedidos entregados 3');
+      expect(texto(fixture)).toContain('3 libras');
+      expect(texto(fixture)).toContain('4 kilos');
       expect(texto(fixture)).toContain('De $60.000 vendidos, recibiste $57.000.');
       expect(texto(fixture).indexOf('Queso campesino')).toBeLessThan(
         texto(fixture).indexOf('Papa criolla'),

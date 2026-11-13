@@ -256,7 +256,7 @@
                         <span class="font-display text-lg font-semibold text-musgo-900">{{
                           detalle.cantidad
                         }}</span>
-                        {{ detalle.unidad }} ·
+                        {{ detalle.unidad | unidad: detalle.cantidad }} ·
                         <span class="font-semibold">{{ detalle.productoNombre }}</span>
                       </span>
                       <span class="tabular-nums text-roca-900/80">{{

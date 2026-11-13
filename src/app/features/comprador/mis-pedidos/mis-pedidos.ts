@@ -23,6 +23,7 @@ import { OrderTimeline } from '../../../shared/components/order-timeline/order-t
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 import {
   ESTADOS,
   ORDENES,
@@ -38,6 +39,7 @@ type Carga = { estado: 'cargando' } | { estado: 'error' } | { estado: 'listo'; p
 @Component({
   selector: 'app-mis-pedidos',
   imports: [
+    UnidadPipe,
     DatePipe,
     RouterLink,
     CopPipe,

@@ -260,8 +260,9 @@
                               detalle.productoNombre
                             }}</span>
                             <span class="block text-sm text-roca-900/80">
-                              {{ detalle.cantidad }} × {{ detalle.precioUnitario | cop }} /
-                              {{ detalle.unidad }}
+                              {{ detalle.cantidad }}
+                              {{ detalle.unidad | unidad: detalle.cantidad }} ×
+                              {{ detalle.precioUnitario | cop }} / {{ detalle.unidad }}
                             </span>
                           </p>
                           <p class="font-semibold tabular-nums">{{ detalle.subtotal | cop }}</p>

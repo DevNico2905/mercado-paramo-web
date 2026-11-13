@@ -6,6 +6,7 @@ import { iconos } from '../../iconos';
 import { Producto } from '../../../core/api/models';
 import { CopPipe } from '../../pipes/cop-pipe';
 import { CategoryArt } from '../category-art/category-art';
+import { UnidadPipe } from '../../pipes/unidad-pipe';
 
 /** Datos que muestra la tarjeta. Sin `id` no enlaza al detalle (vista previa del formulario). */
 export type ProductoDeTarjeta = Pick<
@@ -17,7 +18,7 @@ const STOCK_BAJO = 5;
 
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, CategoryArt, CopPipe, LucideDynamicIcon],
+  imports: [UnidadPipe, RouterLink, CategoryArt, CopPipe, LucideDynamicIcon],
   templateUrl: './product-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block h-full' },

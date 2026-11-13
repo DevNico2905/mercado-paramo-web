@@ -12,6 +12,7 @@ import { CategoryArt } from '../../../shared/components/category-art/category-ar
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 
 type Carga =
   { estado: 'cargando' } | { estado: 'error' } | { estado: 'listo'; productos: Producto[] };
@@ -27,7 +28,7 @@ function ordenar(productos: Producto[]): Producto[] {
 
 @Component({
   selector: 'app-mis-productos',
-  imports: [RouterLink, CategoryArt, CopPipe, EmptyState, Skeleton, LucideDynamicIcon],
+  imports: [UnidadPipe, RouterLink, CategoryArt, CopPipe, EmptyState, Skeleton, LucideDynamicIcon],
   templateUrl: './mis-productos.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

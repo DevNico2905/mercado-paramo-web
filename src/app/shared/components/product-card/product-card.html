@@ -8,7 +8,7 @@
       <span
         class="absolute top-2 left-2 rounded-full bg-frailejon-400 px-2.5 py-1 text-xs font-bold text-musgo-900 shadow-suave"
       >
-        ¡{{ p.stock === 1 ? 'Queda' : 'Quedan' }} {{ p.stock }}!
+        ¡{{ p.stock === 1 ? 'Queda' : 'Quedan' }} {{ p.stock }} {{ p.unidad | unidad: p.stock }}!
       </span>
     } @else if (agotado()) {
       <span

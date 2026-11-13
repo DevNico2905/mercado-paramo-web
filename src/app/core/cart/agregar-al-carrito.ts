@@ -3,6 +3,7 @@ import { Producto } from '../api/models';
 import { AuthService } from '../auth/auth-service';
 import { ConfirmService } from '../ui/confirm-service';
 import { ToastService } from '../ui/toast-service';
+import { pluralizarUnidad } from '../../shared/pipes/unidad-pipe';
 import { CartService } from './cart-service';
 
 const primerNombre = (nombre: string) => nombre.trim().split(/\s+/)[0];
@@ -48,7 +49,7 @@ export class AgregarAlCarrito {
         return true;
       case 'tope':
         this.toast.info(
-          `Solo hay ${producto.stock} de ${producto.nombre}. Ya tienes el máximo en tu carrito.`,
+          `Solo hay ${producto.stock} ${pluralizarUnidad(producto.unidad, producto.stock)} de ${producto.nombre}. Ya las tienes todas en tu carrito.`,
         );
         return true;
       default:

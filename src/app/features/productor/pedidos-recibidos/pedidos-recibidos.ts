@@ -24,6 +24,7 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
 import { CopPipe } from '../../../shared/pipes/cop-pipe';
+import { UnidadPipe } from '../../../shared/pipes/unidad-pipe';
 import {
   AccionPedido,
   ESTADOS_HISTORIAL,
@@ -57,7 +58,16 @@ const VACIOS: Record<Pestana, { emoji: string; titulo: string; mensaje: string }
 
 @Component({
   selector: 'app-pedidos-recibidos',
-  imports: [DatePipe, RouterLink, CopPipe, EmptyState, Skeleton, StatusBadge, LucideDynamicIcon],
+  imports: [
+    UnidadPipe,
+    DatePipe,
+    RouterLink,
+    CopPipe,
+    EmptyState,
+    Skeleton,
+    StatusBadge,
+    LucideDynamicIcon,
+  ],
   templateUrl: './pedidos-recibidos.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
