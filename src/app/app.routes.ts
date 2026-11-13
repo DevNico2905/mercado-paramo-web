@@ -2,9 +2,6 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, roleGuard } from './core/auth/guards';
 import { Shell } from './layout/shell';
 
-const provisional = () =>
-  import('./features/provisional/pantalla-provisional').then((m) => m.PantallaProvisional);
-
 const productoForm = () =>
   import('./features/productor/producto-form/producto-form').then((m) => m.ProductoForm);
 
@@ -121,8 +118,8 @@ export const routes: Routes = [
       {
         path: '**',
         title: titulo('Página no encontrada'),
-        data: { titulo: 'Página no encontrada' },
-        loadComponent: provisional,
+        loadComponent: () =>
+          import('./features/publico/no-encontrada/no-encontrada').then((m) => m.NoEncontrada),
       },
     ],
   },
