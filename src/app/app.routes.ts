@@ -5,6 +5,9 @@ import { Shell } from './layout/shell';
 const provisional = () =>
   import('./features/provisional/pantalla-provisional').then((m) => m.PantallaProvisional);
 
+const productoForm = () =>
+  import('./features/productor/producto-form/producto-form').then((m) => m.ProductoForm);
+
 const titulo = (nombre: string) => `${nombre} · Mercado Páramo`;
 
 export const routes: Routes = [
@@ -58,32 +61,36 @@ export const routes: Routes = [
           {
             path: 'productos',
             title: titulo('Mis productos'),
-            data: { titulo: 'Mis productos' },
-            loadComponent: provisional,
+            loadComponent: () =>
+              import('./features/productor/mis-productos/mis-productos').then(
+                (m) => m.MisProductos,
+              ),
           },
           {
             path: 'productos/nuevo',
             title: titulo('Nuevo producto'),
-            data: { titulo: 'Nuevo producto' },
-            loadComponent: provisional,
+            loadComponent: productoForm,
           },
           {
             path: 'productos/:id/editar',
             title: titulo('Editar producto'),
-            data: { titulo: 'Editar producto' },
-            loadComponent: provisional,
+            loadComponent: productoForm,
           },
           {
             path: 'pedidos',
             title: titulo('Pedidos recibidos'),
-            data: { titulo: 'Pedidos recibidos' },
-            loadComponent: provisional,
+            loadComponent: () =>
+              import('./features/productor/pedidos-recibidos/pedidos-recibidos').then(
+                (m) => m.PedidosRecibidos,
+              ),
           },
           {
             path: 'reporte',
             title: titulo('Reporte de ventas'),
-            data: { titulo: 'Reporte de ventas' },
-            loadComponent: provisional,
+            loadComponent: () =>
+              import('./features/productor/reporte-ventas/reporte-ventas').then(
+                (m) => m.ReporteVentas,
+              ),
           },
         ],
       },
