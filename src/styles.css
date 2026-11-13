@@ -19,6 +19,7 @@
 
   --animate-aparecer: aparecer 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-crecer: crecer 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-trazar: trazar 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-flotar: flotar 5s ease-in-out infinite;
 }
 
@@ -26,6 +27,12 @@
   from {
     opacity: 0;
     transform: translateY(0.75rem);
+  }
+}
+
+@keyframes trazar {
+  from {
+    stroke-dasharray: 0 1000;
   }
 }
 

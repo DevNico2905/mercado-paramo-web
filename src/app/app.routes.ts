@@ -114,8 +114,7 @@ export const routes: Routes = [
           {
             path: 'impacto',
             title: titulo('Impacto'),
-            data: { titulo: 'Impacto' },
-            loadComponent: provisional,
+            loadComponent: () => import('./features/admin/impacto/impacto').then((m) => m.Impacto),
           },
         ],
       },

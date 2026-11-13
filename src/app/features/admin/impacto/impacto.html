@@ -1,0 +1,312 @@
+@let c = carga();
+@switch (c.estado) {
+  @case ('cargando') {
+    <p class="sr-only" role="status">Cargando el impacto…</p>
+    <div class="flex flex-col gap-5" aria-hidden="true">
+      <app-skeleton class="h-72 rounded-3xl" />
+      <div class="grid gap-4 sm:grid-cols-3">
+        <app-skeleton class="h-36 rounded-2xl" />
+        <app-skeleton class="h-36 rounded-2xl" />
+        <app-skeleton class="h-36 rounded-2xl" />
+      </div>
+      <app-skeleton class="h-80 rounded-3xl" />
+    </div>
+  }
+  @case ('error') {
+    <app-empty-state
+      emoji="🌧️"
+      titulo="No pudimos cargar el impacto"
+      mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+    >
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+        (click)="cargar()"
+      >
+        <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
+        Intentar de nuevo
+      </button>
+    </app-empty-state>
+  }
+  @case ('listo') {
+    @let i = c.impacto;
+    @if (i.participacionPorcentaje === null) {
+      <section
+        class="relative overflow-hidden rounded-3xl bg-musgo-900 px-6 py-12 text-center text-white shadow-elevada sm:px-12 sm:py-20"
+        aria-labelledby="impacto-vacio"
+      >
+        <span
+          class="pointer-events-none absolute -top-24 left-1/2 size-96 -translate-x-1/2 rounded-full bg-frailejon-400/15 blur-3xl"
+          aria-hidden="true"
+        ></span>
+        <svg
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full text-musgo-700/60"
+          viewBox="0 0 400 120"
+          preserveAspectRatio="none"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            opacity="0.5"
+            d="M0 70 C60 30 110 80 170 52 C230 24 280 70 330 44 C360 30 385 40 400 34 V120 H0 Z"
+          />
+          <path d="M0 96 C70 66 130 104 200 82 C270 60 330 98 400 74 V120 H0 Z" />
+        </svg>
+        <div class="relative mx-auto max-w-xl motion-safe:animate-aparecer">
+          <span class="text-6xl motion-safe:animate-flotar" aria-hidden="true">🌱</span>
+          <p class="mt-4 text-xs font-bold tracking-[0.18em] text-frailejon-400 uppercase">
+            Impacto de Mercado Páramo
+          </p>
+          <h1 id="impacto-vacio" class="mt-3 text-4xl font-semibold text-white sm:text-5xl">
+            El impacto empieza con el primer pedido entregado
+          </h1>
+          <p class="mt-4 text-lg text-white/85">
+            Todavía no hay ventas entregadas. Cuando lleguen, aquí verás cuánto dinero llegó
+            directamente a las familias productoras del páramo.
+          </p>
+          @if (i.productoresVerificados > 0) {
+            <p
+              class="mt-6 inline-flex rounded-full bg-white/10 px-4 py-2 font-semibold ring-1 ring-white/15"
+            >
+              {{ i.productoresVerificados }}
+              {{
+                i.productoresVerificados === 1
+                  ? 'productor verificado está listo'
+                  : 'productores verificados están listos'
+              }}
+              para vender
+            </p>
+          } @else {
+            <a
+              routerLink="/admin/productores"
+              class="mt-6 inline-flex min-h-12 items-center rounded-xl bg-frailejon-400 px-6 font-semibold text-musgo-900 hover:bg-frailejon-100"
+            >
+              Verificar productores →
+            </a>
+          }
+        </div>
+      </section>
+    } @else {
+      <section
+        class="relative overflow-hidden rounded-3xl bg-musgo-900 px-6 py-10 text-white shadow-elevada sm:px-12 sm:py-16"
+        aria-labelledby="impacto-titular"
+      >
+        <span
+          class="pointer-events-none absolute -top-32 -right-24 size-[28rem] rounded-full bg-frailejon-400/20 blur-3xl"
+          aria-hidden="true"
+        ></span>
+        <span
+          class="pointer-events-none absolute -bottom-40 -left-24 size-96 rounded-full bg-musgo-700/70 blur-3xl"
+          aria-hidden="true"
+        ></span>
+        <svg
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full text-musgo-700/50 sm:h-36"
+          viewBox="0 0 400 120"
+          preserveAspectRatio="none"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            opacity="0.5"
+            d="M0 70 C60 30 110 80 170 52 C230 24 280 70 330 44 C360 30 385 40 400 34 V120 H0 Z"
+          />
+          <path d="M0 96 C70 66 130 104 200 82 C270 60 330 98 400 74 V120 H0 Z" />
+        </svg>
+
+        <div class="relative grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-center">
+          <div class="motion-safe:animate-aparecer">
+            <p class="text-xs font-bold tracking-[0.18em] text-frailejon-400 uppercase">
+              Impacto de Mercado Páramo · Guasca, Cundinamarca
+            </p>
+            <h1 id="impacto-titular" class="mt-4 font-display font-semibold text-white">
+              <span class="block text-5xl leading-none text-frailejon-400 sm:text-7xl lg:text-8xl">
+                <app-cifra-animada formato="cop" [valor]="i.recibidoPorProductores" />
+              </span>
+              <span class="mt-3 block text-2xl leading-tight sm:text-4xl">
+                llegaron directamente a los productores
+              </span>
+            </h1>
+            <p class="mt-5 max-w-2xl text-lg text-white/85">
+              Sin intermediarios: de cada peso vendido en pedidos entregados, las familias del
+              páramo recibieron el {{ i.participacionPorcentaje }}&nbsp;%.
+            </p>
+          </div>
+
+          <figure
+            class="mx-auto hidden w-full max-w-xs motion-safe:animate-aparecer motion-safe:[animation-delay:150ms] sm:block"
+            [attr.aria-label]="
+              'Participación del productor: ' +
+              i.participacionPorcentaje +
+              ' % en Mercado Páramo frente a ' +
+              intermediarios.minimo +
+              '–' +
+              intermediarios.maximo +
+              ' % con intermediarios'
+            "
+          >
+            <div class="relative">
+              <svg viewBox="0 0 200 200" class="w-full -rotate-90" aria-hidden="true">
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="84"
+                  fill="none"
+                  stroke-width="18"
+                  class="stroke-white/10"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="84"
+                  fill="none"
+                  stroke-width="18"
+                  stroke-linecap="round"
+                  class="stroke-frailejon-400 motion-safe:animate-trazar"
+                  [attr.stroke-dasharray]="anillos().exterior"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="60"
+                  fill="none"
+                  stroke-width="12"
+                  class="stroke-white/10"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="60"
+                  fill="none"
+                  stroke-width="12"
+                  class="stroke-white/60 motion-safe:animate-trazar motion-safe:[animation-delay:200ms]"
+                  [attr.stroke-dasharray]="anillos().interiorMinimo"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="60"
+                  fill="none"
+                  stroke-width="12"
+                  class="stroke-white/30"
+                  [attr.stroke-dasharray]="anillos().interiorRango"
+                  [attr.stroke-dashoffset]="anillos().interiorDesfase"
+                />
+              </svg>
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center"
+                aria-hidden="true"
+              >
+                <span class="font-display text-5xl font-semibold text-frailejon-400">
+                  {{ i.participacionPorcentaje }}&nbsp;%
+                </span>
+                <span class="text-sm text-white/80">para el productor</span>
+              </div>
+            </div>
+            <figcaption class="mt-4 flex flex-col gap-2 text-sm" aria-hidden="true">
+              <span class="flex items-center gap-2">
+                <span class="h-2.5 w-6 rounded-full bg-frailejon-400"></span>
+                En Mercado Páramo · {{ i.participacionPorcentaje }}&nbsp;%
+              </span>
+              <span class="flex items-center gap-2 text-white/80">
+                <span class="flex h-2.5 w-6 overflow-hidden rounded-full">
+                  <span class="w-3/5 bg-white/60"></span><span class="flex-1 bg-white/30"></span>
+                </span>
+                Con intermediarios · {{ intermediarios.minimo }}–{{ intermediarios.maximo }}&nbsp;%
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <dl class="mt-5 grid gap-4 sm:grid-cols-3">
+        <div
+          class="rounded-2xl bg-white p-6 shadow-suave motion-safe:animate-aparecer motion-safe:[animation-delay:100ms]"
+        >
+          <dt class="flex items-center gap-2 font-semibold text-roca-900/80">
+            <span class="text-2xl" aria-hidden="true">🧑‍🌾</span>
+            Productores verificados
+          </dt>
+          <dd class="mt-2 font-display text-5xl font-semibold text-musgo-900 sm:text-6xl">
+            <app-cifra-animada [valor]="i.productoresVerificados" />
+          </dd>
+        </div>
+        <div
+          class="rounded-2xl bg-white p-6 shadow-suave motion-safe:animate-aparecer motion-safe:[animation-delay:180ms]"
+        >
+          <dt class="flex items-center gap-2 font-semibold text-roca-900/80">
+            <span class="text-2xl" aria-hidden="true">🧺</span>
+            Pedidos entregados
+          </dt>
+          <dd class="mt-2 font-display text-5xl font-semibold text-musgo-900 sm:text-6xl">
+            <app-cifra-animada [valor]="i.pedidosEntregados" />
+          </dd>
+        </div>
+        <div
+          class="rounded-2xl bg-white p-6 shadow-suave motion-safe:animate-aparecer motion-safe:[animation-delay:260ms]"
+        >
+          <dt class="flex items-center gap-2 font-semibold text-roca-900/80">
+            <span class="text-2xl" aria-hidden="true">💰</span>
+            Total vendido
+          </dt>
+          <dd
+            class="mt-2 font-display text-4xl font-semibold break-words text-musgo-900 sm:text-5xl"
+          >
+            <app-cifra-animada formato="cop" [valor]="i.totalVendido" />
+          </dd>
+        </div>
+      </dl>
+
+      <div class="mt-5 grid gap-5 lg:grid-cols-[1.2fr_1fr] lg:items-stretch">
+        <app-impact-meter
+          perspectiva="plataforma"
+          [total]="i.totalVendido"
+          [montoProductor]="i.recibidoPorProductores"
+          [porcentaje]="i.participacionPorcentaje"
+        />
+
+        <section
+          class="flex flex-col rounded-3xl bg-frailejon-100 p-6 ring-1 ring-frailejon-400 ring-inset sm:p-8"
+          aria-labelledby="impacto-diferencia"
+        >
+          <h2 id="impacto-diferencia" class="text-2xl font-semibold">
+            Lo que cambia para las familias
+          </h2>
+          <p class="mt-4 font-display text-4xl font-semibold text-musgo-900 sm:text-5xl">
+            +{{ diferencia() | cop }}
+          </p>
+          <p class="mt-2 text-musgo-900">
+            más de lo que habrían recibido vendiendo con intermediarios, incluso en el mejor caso
+            ({{ intermediarios.maximo }}&nbsp;%).
+          </p>
+          <div class="mt-6 rounded-2xl bg-white/70 p-4">
+            <p class="text-sm font-semibold text-musgo-900">
+              Por cada {{ ejemplo | cop }} que paga un comprador, el productor recibe:
+            </p>
+            <dl class="mt-3 flex flex-col gap-2">
+              <div class="flex items-baseline justify-between gap-3">
+                <dt>En Mercado Páramo</dt>
+                <dd class="font-display text-2xl font-semibold text-musgo-900">
+                  {{ (ejemplo * (i.participacionPorcentaje ?? 0)) / 100 | cop }}
+                </dd>
+              </div>
+              <div class="flex flex-wrap items-baseline justify-between gap-x-3 text-roca-900/80">
+                <dt>Con intermediarios</dt>
+                <dd class="font-display text-xl font-semibold">
+                  {{ (ejemplo * intermediarios.minimo) / 100 | cop }} a
+                  {{ (ejemplo * intermediarios.maximo) / 100 | cop }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div class="mt-6 border-t border-musgo-900/15 pt-4 text-sm text-roca-900/80 lg:mt-auto">
+            <p>
+              La plataforma retuvo
+              <span class="font-semibold text-roca-900">{{ i.comisionPlataforma | cop }}</span>
+              de comisión para poder operar.
+            </p>
+          </div>
+        </section>
+      </div>
+    }
+  }
+}
