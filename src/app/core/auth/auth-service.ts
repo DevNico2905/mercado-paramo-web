@@ -24,6 +24,8 @@ export class AuthService {
   private readonly _usuario = signal<Perfil | null>(null);
 
   readonly usuario = this._usuario.asReadonly();
+  /** Momento (ms) de la última carga del perfil, para no repetir consultas seguidas. */
+  private ultimaCargaPerfil = 0;
   readonly rol = computed<Rol | null>(() => this._usuario()?.rol ?? null);
   readonly estaAutenticado = computed(() => this._usuario() !== null);
 
@@ -58,7 +60,17 @@ export class AuthService {
   }
 
   cargarPerfil(): Observable<Perfil> {
-    return this.http.get<Perfil>(URL_PERFIL).pipe(tap((perfil) => this._usuario.set(perfil)));
+    return this.http.get<Perfil>(URL_PERFIL).pipe(
+      tap((perfil) => {
+        this.ultimaCargaPerfil = Date.now();
+        this._usuario.set(perfil);
+      }),
+    );
+  }
+
+  /** Milisegundos desde la última carga del perfil. */
+  antiguedadPerfil(): number {
+    return Date.now() - this.ultimaCargaPerfil;
   }
 
   logout(): void {
