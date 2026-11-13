@@ -56,7 +56,7 @@ Tipografías: **Fraunces** para títulos y cifras grandes, **Inter** para la int
 
 Componentes distintivos:
 - **ImpactMeter.** Compara lo que recibe el productor en Mercado Páramo (95 %) con lo que recibiría con intermediarios (15–25 %), en pesos y con barras. Tiene una variante compacta para el carrito y una completa para el detalle, la confirmación, el reporte y el impacto.
-- **Arte por categoría.** La API no tiene fotos de productos; cada tarjeta muestra un degradado, la silueta del páramo y un emoji por categoría.
+- **Arte por categoría.** La API no tiene fotos de productos; cada tarjeta muestra un degradado, la silueta del páramo y un grupo de 2 o 3 emojis por categoría (por ejemplo 🍎🍓🍌 para Frutas), para que se entienda la categoría y no un producto puntual.
 - **Línea de tiempo del pedido.** Pendiente → Aceptado → Entregado, con los finales alternativos (rechazado y cancelado) marcados en rojo.
 
 La interfaz es **mobile-first**: se diseñó primero para 360 px, con áreas táctiles de al menos 44 px, barra de navegación inferior en móvil y header en escritorio.

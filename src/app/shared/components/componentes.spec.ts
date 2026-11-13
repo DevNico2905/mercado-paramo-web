@@ -3,17 +3,17 @@ import { arteDeCategoria } from './category-art/categorias';
 import { pasosDelPedido } from './order-timeline/order-timeline';
 
 describe('arteDeCategoria', () => {
-  it('asigna el emoji de cada categoría, sin importar tildes ni mayúsculas', () => {
-    expect(arteDeCategoria('Tubérculos').emoji).toBe('🥔');
-    expect(arteDeCategoria('LACTEOS').emoji).toBe('🧀');
-    expect(arteDeCategoria('Frutas').emoji).toBe('🍓');
-    expect(arteDeCategoria('Hortalizas').emoji).toBe('🥬');
-    expect(arteDeCategoria('Hierbas y aromáticas').emoji).toBe('🌿');
+  it('asigna los emojis de cada categoría, sin importar tildes ni mayúsculas', () => {
+    expect(arteDeCategoria('Tubérculos').emojis).toEqual(['🍠', '🥔']);
+    expect(arteDeCategoria('LACTEOS').emojis).toEqual(['🥛', '🧀', '🧈']);
+    expect(arteDeCategoria('Frutas').emojis).toEqual(['🍎', '🍓', '🍌']);
+    expect(arteDeCategoria('Hortalizas').emojis).toEqual(['🍅', '🥬', '🥦']);
+    expect(arteDeCategoria('Hierbas y aromáticas').emojis).toEqual(['🍃', '🌿', '🌱']);
   });
 
   it('usa 🌾 para cualquier otra categoría', () => {
-    expect(arteDeCategoria('Apicultura').emoji).toBe('🌾');
-    expect(arteDeCategoria(null).emoji).toBe('🌾');
+    expect(arteDeCategoria('Apicultura').emojis).toEqual(['🌾']);
+    expect(arteDeCategoria(null).emojis).toEqual(['🌾']);
   });
 });
 

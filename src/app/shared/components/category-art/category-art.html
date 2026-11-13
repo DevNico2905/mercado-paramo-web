@@ -16,9 +16,11 @@
     <path opacity="0.55" d="M0 96 C70 66 130 104 200 82 C270 60 330 98 400 74 V120 H0 Z" />
   </svg>
   <span
-    class="relative leading-none drop-shadow-[0_8px_10px_rgb(30_59_45/0.25)] transition-transform duration-300 ease-out motion-safe:group-hover/tarjeta:-translate-y-1 motion-safe:group-hover/tarjeta:scale-110 motion-safe:group-hover/tarjeta:-rotate-6"
-    [class]="emoji[tamano()]"
+    class="relative flex items-end leading-none drop-shadow-[0_8px_10px_rgb(30_59_45/0.25)] transition-transform duration-300 ease-out motion-safe:group-hover/tarjeta:-translate-y-1 motion-safe:group-hover/tarjeta:scale-110 motion-safe:group-hover/tarjeta:-rotate-6"
+    [class]="grupo[tamano()]"
   >
-    {{ arte().emoji }}
+    @for (item of emojis(); track $index) {
+      <span [class]="item.clases">{{ item.emoji }}</span>
+    }
   </span>
 </div>

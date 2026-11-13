@@ -86,7 +86,11 @@
                   formControlName="categoriaId"
                   [value]="opcion.id"
                 />
-                <span class="text-2xl leading-none" aria-hidden="true">{{ opcion.emoji }}</span>
+                <span class="flex shrink-0 -space-x-1 text-xl leading-none" aria-hidden="true">
+                  @for (emoji of opcion.emojis; track $index) {
+                    <span>{{ emoji }}</span>
+                  }
+                </span>
                 <span class="text-sm leading-tight">{{ opcion.nombre }}</span>
               </label>
             }

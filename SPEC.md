@@ -74,7 +74,7 @@ Contraste mínimo **WCAG AA** en todo texto.
 1. **Medidor de impacto (`ImpactMeter`)**. Es el componente estrella. Una comparación visual entre lo que recibe el productor **con intermediarios (15–25 %)** y **en Mercado Páramo (95 %)**, más el monto en pesos que recibe el productor en esa compra.
    - Variantes: `compacta` (una línea, en el carrito) y `completa` (con dos barras animadas, en el detalle del producto, la confirmación del pedido, el reporte del productor y el impacto del ADMIN).
    - Ejemplo de texto: *"De tus $24.000, **$22.800 llegan a Pedro** en la vereda La Concepción."*
-2. **Arte por categoría (sin fotos).** La API no tiene imágenes de productos. Cada tarjeta muestra un fondo con degradado y un emoji grande según la categoría: Tubérculos 🥔, Lácteos 🧀, Frutas 🍓, Hortalizas 🥬, Hierbas y aromáticas 🌿 (otra: 🌾). Debe verse intencional y bonito, no como un sustituto pobre de una foto.
+2. **Arte por categoría (sin fotos).** La API no tiene imágenes de productos. Cada tarjeta muestra un fondo con degradado y un grupo de 2 o 3 emojis grandes según la categoría, para que se lea la categoría completa y no un producto puntual: Tubérculos 🍠🥔, Lácteos 🥛🧀🧈, Frutas 🍎🍓🍌, Hortalizas 🍅🥬🥦, Hierbas y aromáticas 🍃🌿🌱 (otra: 🌾). Debe verse intencional y bonito, no como un sustituto pobre de una foto.
 3. **Línea de tiempo del pedido (`OrderTimeline`).** Un stepper con los estados `PENDIENTE → ACEPTADO → ENTREGADO`, que marca en rojo los finales alternativos `RECHAZADO` y `CANCELADO`.
 4. **Insignia de estado (`StatusBadge`).** Un color por estado de pedido y de verificación.
 5. **Barra fija del carrito.** En móvil, cuando el carrito tiene ítems, una barra inferior fija dice *"Ver carrito · 3 productos · $36.000"*.

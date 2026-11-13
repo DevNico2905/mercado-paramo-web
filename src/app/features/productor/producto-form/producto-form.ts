@@ -103,7 +103,7 @@ export class ProductoForm implements OnInit {
   protected readonly opcionesCategoria = computed(() =>
     (this.categorias() ?? []).map((categoria) => ({
       ...categoria,
-      emoji: arteDeCategoria(categoria.nombre).emoji,
+      emojis: arteDeCategoria(categoria.nombre).emojis,
     })),
   );
 
