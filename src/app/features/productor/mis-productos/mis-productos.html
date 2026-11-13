@@ -15,7 +15,12 @@
         routerLink="/productor/productos/nuevo"
         class="flex min-h-13 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-6 text-base font-semibold text-white transition hover:bg-musgo-900 active:scale-[0.98]"
       >
-        <svg lucidePlus [size]="22" [strokeWidth]="2.5" aria-hidden="true"></svg>
+        <svg
+          [lucideIcon]="iconos.LucidePlus"
+          [size]="22"
+          [strokeWidth]="2.5"
+          aria-hidden="true"
+        ></svg>
         Nuevo producto
       </a>
     } @else {
@@ -25,7 +30,12 @@
         class="flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-roca-900/10 px-6 text-base font-semibold text-roca-900/70"
         aria-describedby="nuevo-producto-motivo"
       >
-        <svg lucidePlus [size]="22" [strokeWidth]="2.5" aria-hidden="true"></svg>
+        <svg
+          [lucideIcon]="iconos.LucidePlus"
+          [size]="22"
+          [strokeWidth]="2.5"
+          aria-hidden="true"
+        ></svg>
         Nuevo producto
       </button>
       <p id="nuevo-producto-motivo" class="mt-1 text-sm text-roca-900/80 sm:max-w-64">
@@ -38,8 +48,6 @@
     }
   </div>
 </header>
-
-<app-verificacion-banner class="mt-5" [estado]="estadoVerificacion()" />
 
 <section class="mt-6" [attr.aria-busy]="carga().estado === 'cargando'" aria-label="Tus productos">
   @let c = carga();
@@ -70,7 +78,7 @@
           class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
           (click)="cargar()"
         >
-          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
           Intentar de nuevo
         </button>
       </app-empty-state>
@@ -91,7 +99,7 @@
               routerLink="/productor/productos/nuevo"
               class="inline-flex min-h-12 items-center gap-2 rounded-xl bg-musgo-700 px-6 font-semibold text-white hover:bg-musgo-900"
             >
-              <svg lucidePlus [size]="20" aria-hidden="true"></svg>
+              <svg [lucideIcon]="iconos.LucidePlus" [size]="20" aria-hidden="true"></svg>
               Publicar mi primer producto
             </a>
           }
@@ -144,35 +152,47 @@
                 </div>
               </div>
 
-              @if (producto.activo) {
-                <div class="mt-4 grid grid-cols-2 gap-2">
-                  <a
-                    [routerLink]="['/productor/productos', producto.id, 'editar']"
-                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-100 px-3 font-semibold text-musgo-900 hover:bg-musgo-700 hover:text-white"
-                    [attr.aria-label]="'Editar ' + producto.nombre"
-                  >
-                    <svg lucidePencil [size]="18" aria-hidden="true"></svg>
-                    Editar
-                  </a>
-                  <button
-                    type="button"
-                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 font-semibold text-peligro-600 ring-1 ring-peligro-600/40 ring-inset hover:bg-peligro-600/10 disabled:opacity-70"
-                    [attr.aria-label]="'Ocultar ' + producto.nombre + ' del catálogo'"
-                    [disabled]="ocultando() === producto.id"
-                    (click)="ocultar(producto)"
-                  >
-                    <svg lucideEyeOff [size]="18" aria-hidden="true"></svg>
-                    {{ ocultando() === producto.id ? 'Ocultando…' : 'Ocultar' }}
-                  </button>
-                </div>
-              } @else {
+              @if (!producto.activo) {
                 <p
                   class="mt-3 flex items-center gap-2 self-start rounded-full bg-roca-900/10 px-3 py-1 text-sm font-semibold text-roca-900"
                 >
-                  <svg lucideEyeOff [size]="16" aria-hidden="true"></svg>
+                  <svg [lucideIcon]="iconos.LucideEyeOff" [size]="16" aria-hidden="true"></svg>
                   Oculto del catálogo
                 </p>
               }
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <a
+                  [routerLink]="['/productor/productos', producto.id, 'editar']"
+                  class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-100 px-3 font-semibold text-musgo-900 hover:bg-musgo-700 hover:text-white"
+                  [attr.aria-label]="'Editar ' + producto.nombre"
+                >
+                  <svg [lucideIcon]="iconos.LucidePencil" [size]="18" aria-hidden="true"></svg>
+                  Editar
+                </a>
+                @if (producto.activo) {
+                  <button
+                    type="button"
+                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 font-semibold text-tierra-600 ring-1 ring-tierra-600/40 ring-inset hover:bg-tierra-600/10 disabled:opacity-70"
+                    [attr.aria-label]="'Ocultar ' + producto.nombre + ' del catálogo'"
+                    [disabled]="procesando() === producto.id"
+                    (click)="ocultar(producto)"
+                  >
+                    <svg [lucideIcon]="iconos.LucideEyeOff" [size]="18" aria-hidden="true"></svg>
+                    {{ procesando() === producto.id ? 'Ocultando…' : 'Ocultar' }}
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-3 font-semibold text-white hover:bg-musgo-900 disabled:opacity-70"
+                    [attr.aria-label]="'Mostrar de nuevo ' + producto.nombre + ' en el catálogo'"
+                    [disabled]="procesando() === producto.id"
+                    (click)="mostrar(producto)"
+                  >
+                    <svg [lucideIcon]="iconos.LucideEye" [size]="18" aria-hidden="true"></svg>
+                    {{ procesando() === producto.id ? 'Mostrando…' : 'Mostrar de nuevo' }}
+                  </button>
+                }
+              </div>
             </li>
           }
         </ul>

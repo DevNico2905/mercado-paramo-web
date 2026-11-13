@@ -78,6 +78,7 @@ describe('pantallas del productor', () => {
       email: 'p@correo.com',
       rol: 'PRODUCTOR',
       estadoVerificacion,
+      vereda: 'La Concepción',
     });
   }
 
@@ -100,31 +101,36 @@ describe('pantallas del productor', () => {
       sesion(estado);
       const fixture = TestBed.createComponent(MisProductos);
       fixture.detectChanges();
-      backend.expectOne(api('/api/usuarios/me')).flush({
-        id: 10,
-        nombre: 'Pedro Rodríguez',
-        email: 'p@correo.com',
-        rol: 'PRODUCTOR',
-        estadoVerificacion: estado,
-      });
       backend.expectOne(api('/api/productor/productos')).flush(productos);
       fixture.detectChanges();
       return fixture;
     }
 
-    it('en revisión: muestra el aviso y deshabilita "Nuevo producto" con el motivo', () => {
+    it('en revisión: deshabilita "Nuevo producto" y explica por qué', () => {
       const fixture = abrir('PENDIENTE', []);
 
-      expect(texto(fixture)).toContain('Tu cuenta está en revisión');
       expect(botones(fixture, 'Nuevo producto')[0].disabled).toBe(true);
       expect(texto(fixture)).toContain('Podrás publicar cuando la fundación apruebe tu cuenta.');
     });
 
-    it('rechazado: pide comunicarse con la fundación', () => {
+    it('rechazado: explica que no puede publicar', () => {
       const fixture = abrir('RECHAZADO', []);
 
-      expect(texto(fixture)).toContain('Tu cuenta no fue aprobada');
-      expect(texto(fixture)).toContain('Comunícate con la fundación');
+      expect(botones(fixture, 'Nuevo producto')[0].disabled).toBe(true);
+      expect(texto(fixture)).toContain('Tu cuenta no fue aprobada; por eso no puedes publicar.');
+    });
+
+    it('se desbloquea en cuanto el perfil pasa a VERIFICADO, sin recargar', () => {
+      const fixture = abrir('PENDIENTE', []);
+      sesion('VERIFICADO');
+      fixture.detectChanges();
+
+      expect(botones(fixture, 'Nuevo producto')).toHaveLength(0);
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector(
+          'a[href="/productor/productos/nuevo"]',
+        ),
+      ).not.toBeNull();
     });
 
     it('verificado: permite crear y marca los ocultos', () => {
@@ -137,8 +143,13 @@ describe('pantallas del productor', () => {
       );
 
       expect(enlace).not.toBeNull();
-      expect(texto(fixture)).not.toContain('Tu cuenta');
       expect(texto(fixture)).toContain('Oculto del catálogo');
+      expect(botones(fixture, 'Mostrar de nuevo')).toHaveLength(1);
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector(
+          'a[href="/productor/productos/2/editar"]',
+        ),
+      ).not.toBeNull();
       expect(texto(fixture).indexOf('Queso campesino')).toBeLessThan(
         texto(fixture).indexOf('Papa criolla'),
       );
@@ -157,6 +168,19 @@ describe('pantallas del productor', () => {
 
       expect(texto(fixture)).toContain('Oculto del catálogo');
     });
+
+    it('"Mostrar de nuevo" llama a reactivar y vuelve a ofrecer "Ocultar"', () => {
+      const fixture = abrir('VERIFICADO', [{ ...queso, activo: false }]);
+      botones(fixture, 'Mostrar de nuevo')[0].click();
+
+      const peticion = backend.expectOne(api('/api/productor/productos/1/reactivar'));
+      expect(peticion.request.method).toBe('PATCH');
+      peticion.flush(queso);
+      fixture.detectChanges();
+
+      expect(texto(fixture)).not.toContain('Oculto del catálogo');
+      expect(botones(fixture, 'Ocultar')).toHaveLength(1);
+    });
   });
 
   describe('Formulario de producto', () => {
@@ -168,7 +192,9 @@ describe('pantallas del productor', () => {
       }
       fixture.detectChanges();
       backend.expectOne(api('/api/categorias')).flush(categorias);
-      backend.expectOne(api('/api/productor/productos')).flush([queso]);
+      if (id) {
+        backend.expectOne(api('/api/productor/productos')).flush([queso]);
+      }
       fixture.detectChanges();
       return fixture;
     }
@@ -247,6 +273,7 @@ describe('pantallas del productor', () => {
     });
 
     it('edita con PUT a partir de los datos actuales', () => {
+      vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
       const fixture = abrir('1');
       expect(
         (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>('#producto-nombre')

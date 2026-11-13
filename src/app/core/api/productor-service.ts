@@ -43,6 +43,11 @@ export class ProductorService {
     return this.http.delete<void>(`${this.base}/productos/${id}`);
   }
 
+  /** Vuelve a mostrar en el catálogo un producto oculto. */
+  reactivarProducto(id: number): Observable<Producto> {
+    return this.http.patch<Producto>(`${this.base}/productos/${id}/reactivar`, null);
+  }
+
   pedidosRecibidos(filtros: FiltrosPedidos = {}): Observable<Pedido[]> {
     return this.http.get<Pedido[]>(`${this.base}/pedidos`, {
       params: parametrosDePedidos(filtros),
