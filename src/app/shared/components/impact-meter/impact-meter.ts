@@ -65,6 +65,17 @@ export class ImpactMeter {
     const vereda = this.vereda()?.trim();
     return vereda ? ` en la vereda ${vereda}` : '';
   });
+  /** Quién habría recibido el dinero con intermediarios, según la perspectiva. */
+  protected readonly sujetoIntermediarios = computed(() => {
+    switch (this.perspectiva()) {
+      case 'productor':
+        return 'habrías recibido';
+      case 'plataforma':
+        return 'los productores habrían recibido';
+      default:
+        return 'habría recibido';
+    }
+  });
   protected readonly conIntermediarios = computed(() => ({
     minimo: Math.round((this.total() * INTERMEDIARIOS.minimo) / 100),
     maximo: Math.round((this.total() * INTERMEDIARIOS.maximo) / 100),

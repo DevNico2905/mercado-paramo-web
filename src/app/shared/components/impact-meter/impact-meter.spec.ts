@@ -57,5 +57,11 @@ describe('ImpactMeter', () => {
     expect(texto({ total: 100000, montoProductor: 95000, perspectiva: 'plataforma' })).toContain(
       '$95.000 llegaron directamente a los productores.',
     );
+    expect(texto({ total: 100000, perspectiva: 'plataforma' })).toContain(
+      'Con intermediarios los productores habrían recibido entre $15.000 y $25.000.',
+    );
+    expect(texto({ total: 100000, perspectiva: 'productor' })).toContain(
+      'Con intermediarios habrías recibido entre',
+    );
   });
 });
