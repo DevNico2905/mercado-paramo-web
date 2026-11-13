@@ -19,7 +19,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, of } from 'rxjs';
 import { aplicarErroresApi } from '../../../core/api/api-error';
 import { CatalogoService } from '../../../core/api/catalogo-service';
@@ -34,8 +36,10 @@ import {
   ProductoDeTarjeta,
 } from '../../../shared/components/product-card/product-card';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
-import { VerificacionBanner } from '../../../shared/components/verificacion-banner/verificacion-banner';
 import { MensajesDeError, mensajeDeError } from '../../../shared/forms/errores';
+
+/** Stock de muestra para la vista previa mientras no se ha escrito la cantidad. */
+const STOCK_SIN_DEFINIR = 99;
 
 export const UNIDADES_SUGERIDAS = ['libra', 'kilo', 'unidad', 'litro', 'docena', 'atado'];
 
@@ -72,21 +76,13 @@ type Carga = { estado: 'cargando' } | { estado: 'no-existe' } | { estado: 'listo
 
 @Component({
   selector: 'app-producto-form',
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    EmptyState,
-    ProductCard,
-    Skeleton,
-    VerificacionBanner,
-    LucideArrowLeft,
-    LucideCircleAlert,
-    LucideLoaderCircle,
-  ],
+  imports: [ReactiveFormsModule, RouterLink, EmptyState, ProductCard, Skeleton, LucideDynamicIcon],
   templateUrl: './producto-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoForm implements OnInit {
+  protected readonly iconos = iconos({ LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle });
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly productor = inject(ProductorService);
   private readonly auth = inject(AuthService);
@@ -114,8 +110,6 @@ export class ProductoForm implements OnInit {
   protected readonly carga = signal<Carga>({ estado: 'cargando' });
   protected readonly enviando = signal(false);
   protected readonly errorGeneral = signal<string | null>(null);
-  /** La vereda no está en el perfil: se toma de los productos ya publicados. */
-  private readonly vereda = signal('');
 
   protected readonly formulario = new FormGroup({
     nombre: new FormControl('', {
@@ -151,27 +145,26 @@ export class ProductoForm implements OnInit {
       nombre: nombre?.trim() || 'Nombre del producto',
       unidad: unidad?.trim() || 'unidad',
       precio: typeof precio === 'number' && precio > 0 ? precio : 0,
-      stock: typeof stock === 'number' && stock >= 0 ? Math.floor(stock) : 0,
+      // Sin cantidad escrita aún, la tarjeta no debe decir "Agotado".
+      stock: typeof stock === 'number' && stock >= 0 ? Math.floor(stock) : STOCK_SIN_DEFINIR,
       categoriaNombre: categoria?.nombre ?? 'Categoría',
       productorNombre: this.auth.usuario()?.nombre ?? '',
-      vereda: this.vereda(),
+      vereda: this.auth.usuario()?.vereda ?? '',
     };
   });
 
   /** Los inputs de ruta (`id`) ya están disponibles aquí, no en el constructor. */
   ngOnInit(): void {
+    const id = this.id();
+    if (id === undefined) {
+      this.carga.set({ estado: 'listo' });
+      return;
+    }
     this.productor
-      .misProductos()
+      .miProducto(Number(id))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (productos) => {
-          this.vereda.set(productos[0]?.vereda ?? '');
-          const id = this.id();
-          if (id === undefined) {
-            this.carga.set({ estado: 'listo' });
-            return;
-          }
-          const producto = productos.find((p) => p.id === Number(id));
+        next: (producto) => {
           if (producto) {
             this.rellenar(producto);
             this.carga.set({ estado: 'listo' });
@@ -179,8 +172,7 @@ export class ProductoForm implements OnInit {
             this.carga.set({ estado: 'no-existe' });
           }
         },
-        error: () =>
-          this.carga.set(this.id() === undefined ? { estado: 'listo' } : { estado: 'no-existe' }),
+        error: () => this.carga.set({ estado: 'no-existe' }),
       });
   }
 

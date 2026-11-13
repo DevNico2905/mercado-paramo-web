@@ -23,7 +23,7 @@ export type VerificacionRequest = Schemas['VerificacionRequest'];
 
 export type LoginResponse = Respuesta<Schemas['LoginResponse']>;
 export type RegistroResponse = Respuesta<Schemas['RegistroResponse'], 'estadoVerificacion'>;
-export type Perfil = Respuesta<Schemas['PerfilResponse'], 'estadoVerificacion'>;
+export type Perfil = Respuesta<Schemas['PerfilResponse'], 'estadoVerificacion' | 'vereda'>;
 export type Categoria = Respuesta<Schemas['CategoriaResponse']>;
 export type Producto = Respuesta<Schemas['ProductoResponse']>;
 export type Productor = Respuesta<Schemas['ProductorResponse']>;
