@@ -102,8 +102,8 @@ export const routes: Routes = [
           {
             path: 'productores',
             title: titulo('Verificación de productores'),
-            data: { titulo: 'Verificación de productores' },
-            loadComponent: provisional,
+            loadComponent: () =>
+              import('./features/admin/productores/productores').then((m) => m.Productores),
           },
           {
             path: 'pedidos',

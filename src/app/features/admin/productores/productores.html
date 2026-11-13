@@ -1,0 +1,211 @@
+<header>
+  <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Fundación</p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">Verificación de productores</h1>
+  <p class="mt-1 max-w-2xl text-roca-900/80">
+    Revisa quién pide vender en Mercado Páramo. Solo los productores verificados pueden publicar.
+  </p>
+</header>
+
+<nav class="mt-5" aria-label="Estado de verificación">
+  <ul class="grid grid-cols-3 gap-1 rounded-2xl bg-white p-1 shadow-suave sm:inline-grid">
+    @for (opcion of pestanas; track opcion.valor) {
+      @let activa = estadoActual() === opcion.valor;
+      @let cantidad = conteo()[opcion.valor];
+      <li>
+        <a
+          routerLink="."
+          [queryParams]="{ pestana: opcion.valor === 'PENDIENTE' ? null : opcion.ruta }"
+          class="flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold transition sm:px-5"
+          [class]="activa ? 'bg-musgo-700 text-white' : 'text-musgo-900 hover:bg-musgo-100'"
+          [attr.aria-current]="activa ? 'page' : null"
+        >
+          {{ opcion.etiqueta }}
+          @if (carga().estado === 'listo') {
+            <span
+              class="min-w-6 rounded-full px-2 py-0.5 text-center text-xs font-bold"
+              [class]="
+                opcion.valor === 'PENDIENTE' && cantidad > 0
+                  ? 'bg-frailejon-400 text-musgo-900'
+                  : activa
+                    ? 'bg-white/20 text-white'
+                    : 'bg-musgo-100 text-musgo-900'
+              "
+            >
+              {{ cantidad
+              }}<span class="sr-only"> {{ cantidad === 1 ? 'productor' : 'productores' }}</span>
+            </span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<section class="mt-6" [attr.aria-busy]="carga().estado === 'cargando'" aria-label="Productores">
+  @let c = carga();
+  @switch (c.estado) {
+    @case ('cargando') {
+      <p class="sr-only" role="status">Cargando productores…</p>
+      <ul class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-hidden="true">
+        @for (esqueleto of esqueletos; track esqueleto) {
+          <li class="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-suave">
+            <div class="flex items-center gap-3">
+              <app-skeleton class="size-12 rounded-full" />
+              <app-skeleton class="h-6 w-1/2" />
+            </div>
+            <app-skeleton class="h-4 w-3/4" />
+            <app-skeleton class="h-16 rounded-xl" />
+            <app-skeleton class="h-12 rounded-xl" />
+          </li>
+        }
+      </ul>
+    }
+    @case ('error') {
+      <app-empty-state
+        emoji="🌧️"
+        titulo="No pudimos cargar los productores"
+        mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+      >
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+          (click)="cargar()"
+        >
+          <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
+          Intentar de nuevo
+        </button>
+      </app-empty-state>
+    }
+    @case ('listo') {
+      @if (visibles().length === 0) {
+        <app-empty-state
+          [emoji]="vacio().emoji"
+          [titulo]="vacio().titulo"
+          [mensaje]="vacio().mensaje"
+        >
+          @if (estadoActual() === 'PENDIENTE' && conteo().VERIFICADO > 0) {
+            <a
+              routerLink="."
+              [queryParams]="{ pestana: 'verificados' }"
+              class="inline-flex min-h-11 items-center rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+            >
+              Ver los {{ conteo().VERIFICADO }} verificados →
+            </a>
+          }
+        </app-empty-state>
+      } @else {
+        <ul class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          @for (productor of visibles(); track productor.id) {
+            @let ocupado = procesando() === productor.id;
+            <li class="motion-safe:animate-aparecer">
+              <article
+                class="flex h-full flex-col rounded-2xl bg-white p-5 shadow-suave"
+                [attr.aria-labelledby]="'productor-' + productor.id"
+              >
+                <div class="flex items-start gap-3">
+                  <span
+                    class="flex size-12 shrink-0 items-center justify-center rounded-full bg-musgo-100 font-display text-lg font-semibold text-musgo-900"
+                    aria-hidden="true"
+                  >
+                    {{ iniciales(productor.nombre) }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <h2
+                      [id]="'productor-' + productor.id"
+                      class="text-xl leading-tight font-semibold break-words"
+                    >
+                      {{ productor.nombre }}
+                    </h2>
+                    <p class="mt-0.5 flex items-center gap-1 text-sm text-roca-900/80">
+                      <svg
+                        [lucideIcon]="iconos.LucideMapPin"
+                        class="shrink-0 text-tierra-600"
+                        [size]="14"
+                        aria-hidden="true"
+                      ></svg>
+                      Vereda {{ productor.vereda }}
+                    </p>
+                  </div>
+                  <app-status-badge tipo="verificacion" [estado]="productor.estadoVerificacion" />
+                </div>
+
+                <dl class="mt-4 flex flex-col gap-2 text-sm">
+                  <div class="flex items-center gap-2">
+                    <dt>
+                      <svg
+                        [lucideIcon]="iconos.LucideMail"
+                        class="text-tierra-600"
+                        [size]="16"
+                        aria-hidden="true"
+                      ></svg>
+                      <span class="sr-only">Correo</span>
+                    </dt>
+                    <dd class="min-w-0 break-all">
+                      <a
+                        [href]="'mailto:' + productor.email"
+                        class="font-semibold text-musgo-700 underline-offset-4 hover:underline"
+                        >{{ productor.email }}</a
+                      >
+                    </dd>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <dt>
+                      <svg
+                        [lucideIcon]="iconos.LucidePhone"
+                        class="text-tierra-600"
+                        [size]="16"
+                        aria-hidden="true"
+                      ></svg>
+                      <span class="sr-only">Teléfono</span>
+                    </dt>
+                    <dd>
+                      <a
+                        [href]="'tel:' + productor.telefono"
+                        class="inline-flex min-h-11 items-center font-semibold text-musgo-700 underline-offset-4 hover:underline"
+                        [attr.aria-label]="
+                          'Llamar a ' + productor.nombre + ' al ' + productor.telefono
+                        "
+                        >{{ productor.telefono }}</a
+                      >
+                    </dd>
+                  </div>
+                </dl>
+
+                <blockquote
+                  class="mt-3 rounded-xl bg-niebla-50 p-3 text-sm"
+                  [class.text-roca-900/70]="!productor.descripcion"
+                  [class.italic]="!productor.descripcion"
+                >
+                  {{ productor.descripcion || 'No contó qué produce.' }}
+                </blockquote>
+
+                @if (productor.estadoVerificacion === 'PENDIENTE') {
+                  <div class="mt-auto grid grid-cols-2 gap-2 pt-4">
+                    <button
+                      type="button"
+                      class="flex min-h-12 items-center justify-center rounded-xl px-3 font-semibold text-peligro-600 ring-1 ring-peligro-600/40 ring-inset hover:bg-peligro-600/10 disabled:opacity-70"
+                      [disabled]="ocupado"
+                      [attr.aria-label]="'Rechazar a ' + productor.nombre"
+                      (click)="decidir(productor, 'RECHAZADO')"
+                    >
+                      Rechazar
+                    </button>
+                    <button
+                      type="button"
+                      class="flex min-h-12 items-center justify-center rounded-xl bg-musgo-700 px-3 font-semibold text-white hover:bg-musgo-900 disabled:opacity-70"
+                      [disabled]="ocupado"
+                      [attr.aria-label]="'Verificar a ' + productor.nombre"
+                      (click)="decidir(productor, 'VERIFICADO')"
+                    >
+                      {{ ocupado ? 'Guardando…' : 'Verificar' }}
+                    </button>
+                  </div>
+                }
+              </article>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
