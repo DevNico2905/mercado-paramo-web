@@ -1,7 +1,7 @@
 <button
   #disparador
   type="button"
-  class="flex min-h-11 items-center gap-2.5 rounded-full p-1 text-left transition hover:bg-white/10 md:pr-4"
+  class="flex min-h-11 items-center gap-2.5 rounded-full p-1 text-left transition hover:bg-white/10 lg:pr-4"
   [attr.aria-expanded]="abierto()"
   [attr.aria-controls]="panelId"
   [attr.aria-label]="'Tu cuenta: ' + perfil().nombre + ', ' + rol()"
@@ -13,7 +13,7 @@
   >
     {{ iniciales() }}
   </span>
-  <span class="hidden leading-tight md:block" aria-hidden="true">
+  <span class="hidden leading-tight whitespace-nowrap lg:block" aria-hidden="true">
     <span class="block text-sm font-semibold">Hola, {{ primerNombre() }}</span>
     <span class="block text-xs text-white/75">{{ rol() }}</span>
   </span>

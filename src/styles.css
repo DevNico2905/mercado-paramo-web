@@ -64,6 +64,11 @@
     @apply outline-2 outline-offset-2 outline-musgo-700;
   }
 
+  /* Sobre superficies oscuras el anillo musgo no contrasta: se usa el amarillo frailejón. */
+  :is(header, .bg-musgo-900, .bg-musgo-700) :focus-visible {
+    @apply outline-frailejon-400;
+  }
+
   button:not(:disabled),
   [role='button'] {
     @apply cursor-pointer;

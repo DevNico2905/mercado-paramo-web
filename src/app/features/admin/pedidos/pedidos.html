@@ -13,8 +13,10 @@
 
 @let f = filtros();
 <section class="mt-5 rounded-2xl bg-white p-4 shadow-suave" aria-label="Filtros">
-  <div class="grid grid-cols-2 gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end">
-    <div class="col-span-2 lg:col-span-1">
+  <div
+    class="grid grid-cols-2 gap-3 md:grid-cols-4 md:items-end lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+  >
+    <div class="col-span-2 md:col-span-1">
       <label
         for="admin-estado"
         class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
@@ -66,7 +68,7 @@
         (change)="filtrar({ hasta: $any($event.target).value || null })"
       />
     </div>
-    <div class="col-span-2 lg:col-span-1">
+    <div class="col-span-2 md:col-span-1">
       <label
         for="admin-orden"
         class="block text-xs font-bold tracking-wider text-tierra-600 uppercase"
@@ -87,7 +89,7 @@
     </div>
     <button
       type="button"
-      class="col-span-2 min-h-11 rounded-xl px-4 text-sm font-semibold text-musgo-700 underline underline-offset-4 hover:text-musgo-900 disabled:invisible lg:col-span-1"
+      class="col-span-2 min-h-11 rounded-xl px-4 text-sm font-semibold text-musgo-700 underline underline-offset-4 hover:text-musgo-900 disabled:hidden md:col-span-4 lg:col-span-1 lg:disabled:block lg:disabled:invisible"
       [disabled]="!hayFiltros()"
       (click)="limpiarFiltros()"
     >
