@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { LucideRefreshCw } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideRefreshCw } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { Observable, catchError, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { CatalogoService } from '../../../core/api/catalogo-service';
 import { Producto } from '../../../core/api/models';
@@ -36,11 +38,13 @@ function productoresDe(productos: Producto[]): OpcionProductor[] {
 
 @Component({
   selector: 'app-catalogo',
-  imports: [RouterLink, ProductCard, EmptyState, Skeleton, LucideRefreshCw],
+  imports: [RouterLink, ProductCard, EmptyState, Skeleton, LucideDynamicIcon],
   templateUrl: './catalogo.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Catalogo {
+  protected readonly iconos = iconos({ LucideRefreshCw });
+
   private readonly catalogo = inject(CatalogoService);
   private readonly router = inject(Router);
   protected readonly cart = inject(CartService);

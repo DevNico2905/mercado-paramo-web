@@ -10,12 +10,14 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { LucideDynamicIcon } from '@lucide/angular';
 import {
   LucideArrowLeft,
   LucideMapPin,
   LucideRefreshCw,
   LucideShoppingBasket,
-} from '@lucide/angular';
+} from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { CatalogoService } from '../../../core/api/catalogo-service';
 import { Producto } from '../../../core/api/models';
@@ -46,15 +48,19 @@ const STOCK_BAJO = 5;
     QuantityStepper,
     Skeleton,
     CopPipe,
-    LucideArrowLeft,
-    LucideMapPin,
-    LucideRefreshCw,
-    LucideShoppingBasket,
+    LucideDynamicIcon,
   ],
   templateUrl: './producto-detalle.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoDetalle {
+  protected readonly iconos = iconos({
+    LucideArrowLeft,
+    LucideMapPin,
+    LucideRefreshCw,
+    LucideShoppingBasket,
+  });
+
   private readonly catalogo = inject(CatalogoService);
   protected readonly cart = inject(CartService);
   protected readonly agregarAlCarrito = inject(AgregarAlCarrito);

@@ -149,7 +149,7 @@
           class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
           (click)="reintentar()"
         >
-          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
           Intentar de nuevo
         </button>
       </app-empty-state>
@@ -230,7 +230,7 @@
                     >
                       {{ abierto ? 'Ocultar detalle' : 'Ver detalle' }}
                       <svg
-                        lucideChevronDown
+                        [lucideIcon]="iconos.LucideChevronDown"
                         class="transition-transform duration-200"
                         [class.rotate-180]="abierto"
                         [size]="18"
@@ -271,7 +271,7 @@
 
                     <p class="mt-4 flex items-start gap-2 text-sm">
                       <svg
-                        lucideMapPin
+                        [lucideIcon]="iconos.LucideMapPin"
                         class="mt-0.5 shrink-0 text-tierra-600"
                         [size]="16"
                         aria-hidden="true"
@@ -299,7 +299,7 @@
                       >
                         @if (cancelando() === pedido.id) {
                           <svg
-                            lucideLoaderCircle
+                            [lucideIcon]="iconos.LucideLoaderCircle"
                             class="motion-safe:animate-spin"
                             [size]="18"
                             aria-hidden="true"

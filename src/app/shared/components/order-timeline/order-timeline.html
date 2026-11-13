@@ -20,10 +20,10 @@
       >
         @switch (paso.situacion) {
           @case ('hecho') {
-            <svg lucideCheck [size]="16" [strokeWidth]="3"></svg>
+            <svg [lucideIcon]="iconos.LucideCheck" [size]="16" [strokeWidth]="3"></svg>
           }
           @case ('fallido') {
-            <svg lucideX [size]="16" [strokeWidth]="3"></svg>
+            <svg [lucideIcon]="iconos.LucideX" [size]="16" [strokeWidth]="3"></svg>
           }
           @default {
             {{ indice + 1 }}

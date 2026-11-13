@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { LucideMinus, LucidePlus } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideMinus, LucidePlus } from '@lucide/icons';
+import { iconos } from '../../iconos';
 
 /** Selector de cantidad entre 1 y `maximo`, con botones táctiles de 48 px. */
 @Component({
   selector: 'app-quantity-stepper',
-  imports: [LucideMinus, LucidePlus],
+  imports: [LucideDynamicIcon],
   template: `
     <div
       role="group"
@@ -18,7 +20,7 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
         [disabled]="cantidad() <= 1"
         (click)="cambio.emit(cantidad() - 1)"
       >
-        <svg lucideMinus [size]="20" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucideMinus" [size]="20" aria-hidden="true"></svg>
       </button>
       <output
         class="w-11 text-center font-display text-xl font-semibold text-musgo-900"
@@ -33,7 +35,7 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
         [disabled]="cantidad() >= maximo()"
         (click)="cambio.emit(cantidad() + 1)"
       >
-        <svg lucidePlus [size]="20" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucidePlus" [size]="20" aria-hidden="true"></svg>
       </button>
     </div>
   `,
@@ -41,6 +43,8 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
   host: { class: 'inline-block' },
 })
 export class QuantityStepper {
+  protected readonly iconos = iconos({ LucideMinus, LucidePlus });
+
   readonly cantidad = input.required<number>();
   readonly maximo = input.required<number>();
   readonly etiqueta = input('Cantidad');

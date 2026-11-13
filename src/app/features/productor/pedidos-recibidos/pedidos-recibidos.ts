@@ -3,7 +3,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { LucideLoaderCircle, LucideMapPin, LucidePhone, LucideRefreshCw } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideLoaderCircle, LucideMapPin, LucidePhone, LucideRefreshCw } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { leerApiError } from '../../../core/api/api-error';
 import {
@@ -55,22 +57,18 @@ const VACIOS: Record<Pestana, { emoji: string; titulo: string; mensaje: string }
 
 @Component({
   selector: 'app-pedidos-recibidos',
-  imports: [
-    DatePipe,
-    RouterLink,
-    CopPipe,
-    EmptyState,
-    Skeleton,
-    StatusBadge,
-    LucideLoaderCircle,
-    LucideMapPin,
-    LucidePhone,
-    LucideRefreshCw,
-  ],
+  imports: [DatePipe, RouterLink, CopPipe, EmptyState, Skeleton, StatusBadge, LucideDynamicIcon],
   templateUrl: './pedidos-recibidos.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PedidosRecibidos {
+  protected readonly iconos = iconos({
+    LucideLoaderCircle,
+    LucideMapPin,
+    LucidePhone,
+    LucideRefreshCw,
+  });
+
   private readonly productor = inject(ProductorService);
   private readonly confirm = inject(ConfirmService);
   private readonly toast = inject(ToastService);

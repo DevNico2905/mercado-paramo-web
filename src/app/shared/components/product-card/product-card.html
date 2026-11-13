@@ -50,7 +50,7 @@
 
     <p class="mt-2 flex items-start gap-1 text-sm text-roca-900/80">
       <svg
-        lucideMapPin
+        [lucideIcon]="iconos.LucideMapPin"
         class="mt-0.5 shrink-0 text-tierra-600"
         [size]="14"
         aria-hidden="true"
@@ -77,7 +77,12 @@
           @if (agotado()) {
             Agotado
           } @else {
-            <svg lucidePlus [size]="18" [strokeWidth]="2.5" aria-hidden="true"></svg>
+            <svg
+              [lucideIcon]="iconos.LucidePlus"
+              [size]="18"
+              [strokeWidth]="2.5"
+              aria-hidden="true"
+            ></svg>
             Agregar
           }
         </button>

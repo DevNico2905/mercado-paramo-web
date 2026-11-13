@@ -11,7 +11,7 @@
       @switch (toast.tipo) {
         @case ('exito') {
           <svg
-            lucideCircleCheck
+            [lucideIcon]="iconos.LucideCircleCheck"
             class="mt-0.5 shrink-0 text-musgo-700"
             [size]="20"
             aria-hidden="true"
@@ -19,7 +19,7 @@
         }
         @case ('error') {
           <svg
-            lucideCircleAlert
+            [lucideIcon]="iconos.LucideCircleAlert"
             class="mt-0.5 shrink-0 text-peligro-600"
             [size]="20"
             aria-hidden="true"
@@ -27,7 +27,7 @@
         }
         @default {
           <svg
-            lucideInfo
+            [lucideIcon]="iconos.LucideInfo"
             class="mt-0.5 shrink-0 text-tierra-600"
             [size]="20"
             aria-hidden="true"
@@ -46,7 +46,7 @@
         aria-label="Cerrar aviso"
         (click)="toastService.cerrar(toast.id)"
       >
-        <svg lucideX [size]="18" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucideX" [size]="18" aria-hidden="true"></svg>
       </button>
     </div>
   }

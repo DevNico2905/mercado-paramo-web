@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { LucideCheck, LucideX } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideCheck, LucideX } from '@lucide/icons';
+import { iconos } from '../../iconos';
 import { EstadoPedido } from '../../../core/api/models';
 
 export interface PasoPedido {
@@ -45,12 +47,14 @@ export function pasosDelPedido(estado: EstadoPedido): PasoPedido[] {
 
 @Component({
   selector: 'app-order-timeline',
-  imports: [LucideCheck, LucideX],
+  imports: [LucideDynamicIcon],
   templateUrl: './order-timeline.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class OrderTimeline {
+  protected readonly iconos = iconos({ LucideCheck, LucideX });
+
   readonly estado = input.required<EstadoPedido>();
 
   protected readonly circulo: Record<PasoPedido['situacion'], string> = {

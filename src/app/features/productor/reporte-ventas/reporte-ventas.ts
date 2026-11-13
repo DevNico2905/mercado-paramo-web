@@ -2,7 +2,9 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { LucideRefreshCw } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideRefreshCw } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { ReporteVentas as Reporte } from '../../../core/api/models';
 import { ProductorService } from '../../../core/api/productor-service';
@@ -20,11 +22,13 @@ type Carga =
 
 @Component({
   selector: 'app-reporte-ventas',
-  imports: [DatePipe, RouterLink, CopPipe, EmptyState, ImpactMeter, Skeleton, LucideRefreshCw],
+  imports: [DatePipe, RouterLink, CopPipe, EmptyState, ImpactMeter, Skeleton, LucideDynamicIcon],
   templateUrl: './reporte-ventas.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReporteVentas {
+  protected readonly iconos = iconos({ LucideRefreshCw });
+
   private readonly productor = inject(ProductorService);
   private readonly router = inject(Router);
 

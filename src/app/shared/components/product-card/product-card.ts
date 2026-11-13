@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideMapPin, LucidePlus } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideMapPin, LucidePlus } from '@lucide/icons';
+import { iconos } from '../../iconos';
 import { Producto } from '../../../core/api/models';
 import { CopPipe } from '../../pipes/cop-pipe';
 import { CategoryArt } from '../category-art/category-art';
@@ -15,12 +17,14 @@ const STOCK_BAJO = 5;
 
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, CategoryArt, CopPipe, LucideMapPin, LucidePlus],
+  imports: [RouterLink, CategoryArt, CopPipe, LucideDynamicIcon],
   templateUrl: './product-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block h-full' },
 })
 export class ProductCard {
+  protected readonly iconos = iconos({ LucideMapPin, LucidePlus });
+
   readonly producto = input.required<ProductoDeTarjeta>();
   readonly mostrarAgregar = input(true);
   /** Unidades de este producto que ya están en el carrito. */

@@ -1,14 +1,15 @@
+import { LucideIconData } from '@lucide/angular';
 import {
   LucideChartColumn,
   LucideClipboardList,
   LucideHeartHandshake,
-  LucideIconData,
   LucideLogIn,
   LucideShoppingBasket,
   LucideSprout,
   LucideStore,
   LucideUsers,
-} from '@lucide/angular';
+} from '@lucide/icons';
+import { icono } from '../shared/iconos';
 import { Rol } from '../core/api/models';
 
 export interface DestinoNavegacion {
@@ -22,36 +23,36 @@ export interface DestinoNavegacion {
 const CATALOGO: DestinoNavegacion = {
   etiqueta: 'Catálogo',
   ruta: '/',
-  icono: LucideStore.icon,
+  icono: icono(LucideStore),
   exacta: true,
 };
 const CARRITO: DestinoNavegacion = {
   etiqueta: 'Carrito',
   ruta: '/carrito',
-  icono: LucideShoppingBasket.icon,
+  icono: icono(LucideShoppingBasket),
 };
 
 const VISITANTE: readonly DestinoNavegacion[] = [
   CATALOGO,
   CARRITO,
-  { etiqueta: 'Entrar', ruta: '/login', icono: LucideLogIn.icon },
+  { etiqueta: 'Entrar', ruta: '/login', icono: icono(LucideLogIn) },
 ];
 
 const POR_ROL: Record<Rol, readonly DestinoNavegacion[]> = {
   COMPRADOR: [
     CATALOGO,
     CARRITO,
-    { etiqueta: 'Mis pedidos', ruta: '/mis-pedidos', icono: LucideClipboardList.icon },
+    { etiqueta: 'Mis pedidos', ruta: '/mis-pedidos', icono: icono(LucideClipboardList) },
   ],
   PRODUCTOR: [
-    { etiqueta: 'Pedidos', ruta: '/productor/pedidos', icono: LucideClipboardList.icon },
-    { etiqueta: 'Mis productos', ruta: '/productor/productos', icono: LucideSprout.icon },
-    { etiqueta: 'Reporte', ruta: '/productor/reporte', icono: LucideChartColumn.icon },
+    { etiqueta: 'Pedidos', ruta: '/productor/pedidos', icono: icono(LucideClipboardList) },
+    { etiqueta: 'Mis productos', ruta: '/productor/productos', icono: icono(LucideSprout) },
+    { etiqueta: 'Reporte', ruta: '/productor/reporte', icono: icono(LucideChartColumn) },
   ],
   ADMIN: [
-    { etiqueta: 'Productores', ruta: '/admin/productores', icono: LucideUsers.icon },
-    { etiqueta: 'Pedidos', ruta: '/admin/pedidos', icono: LucideClipboardList.icon },
-    { etiqueta: 'Impacto', ruta: '/admin/impacto', icono: LucideHeartHandshake.icon },
+    { etiqueta: 'Productores', ruta: '/admin/productores', icono: icono(LucideUsers) },
+    { etiqueta: 'Pedidos', ruta: '/admin/pedidos', icono: icono(LucideClipboardList) },
+    { etiqueta: 'Impacto', ruta: '/admin/impacto', icono: icono(LucideHeartHandshake) },
   ],
 };
 

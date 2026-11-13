@@ -3,12 +3,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
+import { LucideDynamicIcon } from '@lucide/angular';
 import {
   LucideChevronDown,
   LucideLoaderCircle,
   LucideMapPin,
   LucideRefreshCw,
-} from '@lucide/angular';
+} from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { leerApiError } from '../../../core/api/api-error';
 import { Pedido } from '../../../core/api/models';
@@ -44,15 +46,19 @@ type Carga = { estado: 'cargando' } | { estado: 'error' } | { estado: 'listo'; p
     OrderTimeline,
     Skeleton,
     StatusBadge,
-    LucideChevronDown,
-    LucideLoaderCircle,
-    LucideMapPin,
-    LucideRefreshCw,
+    LucideDynamicIcon,
   ],
   templateUrl: './mis-pedidos.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MisPedidos {
+  protected readonly iconos = iconos({
+    LucideChevronDown,
+    LucideLoaderCircle,
+    LucideMapPin,
+    LucideRefreshCw,
+  });
+
   private readonly pedidosService = inject(PedidosService);
   private readonly confirm = inject(ConfirmService);
   private readonly toast = inject(ToastService);

@@ -4,7 +4,7 @@
       class="flex size-9 shrink-0 items-center justify-center rounded-full bg-frailejon-400"
       aria-hidden="true"
     >
-      <svg lucideHeartHandshake [size]="20"></svg>
+      <svg [lucideIcon]="iconos.LucideHeartHandshake" [size]="20"></svg>
     </span>
     <span class="flex-1 text-sm leading-snug">
       <strong class="font-display text-lg font-semibold">{{ monto() | cop }}</strong>
@@ -42,7 +42,7 @@
       <p
         class="flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-frailejon-400 uppercase"
       >
-        <svg lucideHeartHandshake [size]="18" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucideHeartHandshake" [size]="18" aria-hidden="true"></svg>
         Lo que pagas llega a quien lo cultivó
       </p>
 

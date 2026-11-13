@@ -2,7 +2,7 @@
   routerLink="/"
   class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-musgo-700 hover:text-musgo-900"
 >
-  <svg lucideArrowLeft [size]="18" aria-hidden="true"></svg>
+  <svg [lucideIcon]="iconos.LucideArrowLeft" [size]="18" aria-hidden="true"></svg>
   Volver al catálogo
 </a>
 
@@ -47,7 +47,7 @@
         class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
         (click)="reintentar()"
       >
-        <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
         Intentar de nuevo
       </button>
     </app-empty-state>
@@ -112,7 +112,7 @@
             </p>
             <p class="flex items-center gap-1 text-sm text-roca-900/80">
               <svg
-                lucideMapPin
+                [lucideIcon]="iconos.LucideMapPin"
                 class="shrink-0 text-tierra-600"
                 [size]="14"
                 aria-hidden="true"
@@ -146,7 +146,7 @@
               class="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-5 text-base font-semibold whitespace-nowrap text-white transition hover:bg-musgo-900 active:scale-[0.98]"
               (click)="agregar(p)"
             >
-              <svg lucideShoppingBasket [size]="20" aria-hidden="true"></svg>
+              <svg [lucideIcon]="iconos.LucideShoppingBasket" [size]="20" aria-hidden="true"></svg>
               Agregar al carrito · {{ subtotal() | cop }}
             </button>
           </div>

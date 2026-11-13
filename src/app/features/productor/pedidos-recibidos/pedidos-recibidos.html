@@ -185,7 +185,7 @@
           class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
           (click)="recargar()"
         >
-          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          <svg [lucideIcon]="iconos.LucideRefreshCw" [size]="18" aria-hidden="true"></svg>
           Intentar de nuevo
         </button>
       </app-empty-state>
@@ -233,12 +233,12 @@
                     'Llamar a ' + pedido.compradorNombre + ' al ' + pedido.compradorTelefono
                   "
                 >
-                  <svg lucidePhone [size]="20" aria-hidden="true"></svg>
+                  <svg [lucideIcon]="iconos.LucidePhone" [size]="20" aria-hidden="true"></svg>
                   Llamar · {{ pedido.compradorTelefono }}
                 </a>
                 <p class="mt-3 flex items-start gap-2">
                   <svg
-                    lucideMapPin
+                    [lucideIcon]="iconos.LucideMapPin"
                     class="mt-1 shrink-0 text-tierra-600"
                     [size]="18"
                     aria-hidden="true"
@@ -295,7 +295,7 @@
                       >
                         @if (ocupado && accion.estilo === 'principal') {
                           <svg
-                            lucideLoaderCircle
+                            [lucideIcon]="iconos.LucideLoaderCircle"
                             class="motion-safe:animate-spin"
                             [size]="20"
                             aria-hidden="true"

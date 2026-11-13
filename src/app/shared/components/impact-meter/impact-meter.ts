@@ -7,7 +7,9 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { LucideHeartHandshake } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideHeartHandshake } from '@lucide/icons';
+import { iconos } from '../../iconos';
 import {
   PARTICIPACION_CON_INTERMEDIARIOS as INTERMEDIARIOS,
   PARTICIPACION_PRODUCTOR,
@@ -20,12 +22,14 @@ import { CopPipe } from '../../pipes/cop-pipe';
  */
 @Component({
   selector: 'app-impact-meter',
-  imports: [CopPipe, LucideHeartHandshake],
+  imports: [CopPipe, LucideDynamicIcon],
   templateUrl: './impact-meter.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class ImpactMeter {
+  protected readonly iconos = iconos({ LucideHeartHandshake });
+
   private readonly locale = inject(LOCALE_ID);
 
   readonly variante = input<'compacta' | 'completa'>('completa');

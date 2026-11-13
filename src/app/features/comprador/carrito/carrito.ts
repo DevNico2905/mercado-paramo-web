@@ -3,12 +3,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {
-  LucideBanknote,
-  LucideCircleAlert,
-  LucideLoaderCircle,
-  LucideTrash2,
-} from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideBanknote, LucideCircleAlert, LucideLoaderCircle, LucideTrash2 } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { aplicarErroresApi, leerApiError } from '../../../core/api/api-error';
 import { CatalogoService } from '../../../core/api/catalogo-service';
@@ -43,15 +40,19 @@ const MENSAJES_DIRECCION = {
     OrderTimeline,
     QuantityStepper,
     CopPipe,
-    LucideBanknote,
-    LucideCircleAlert,
-    LucideLoaderCircle,
-    LucideTrash2,
+    LucideDynamicIcon,
   ],
   templateUrl: './carrito.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Carrito {
+  protected readonly iconos = iconos({
+    LucideBanknote,
+    LucideCircleAlert,
+    LucideLoaderCircle,
+    LucideTrash2,
+  });
+
   private readonly auth = inject(AuthService);
   private readonly catalogo = inject(CatalogoService);
   private readonly pedidos = inject(PedidosService);
