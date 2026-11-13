@@ -1,5 +1,5 @@
-import { parametrosDePedidos } from '../../../core/api/pedidos-service';
-import { aFiltrosDeApi, leerFiltros, rangoInvalido } from './filtros';
+import { parametrosDePedidos } from './pedidos-service';
+import { aFiltrosDeApi, leerFiltros, rangoInvalido } from './filtros-pedidos';
 
 describe('filtros de Mis pedidos', () => {
   it('por defecto pide todos los pedidos, por fecha descendente', () => {

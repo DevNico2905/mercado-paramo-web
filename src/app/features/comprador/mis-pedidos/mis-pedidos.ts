@@ -29,7 +29,7 @@ import {
   aFiltrosDeApi,
   leerFiltros,
   rangoInvalido,
-} from './filtros';
+} from '../../../core/api/filtros-pedidos';
 
 type Carga = { estado: 'cargando' } | { estado: 'error' } | { estado: 'listo'; pedidos: Pedido[] };
 

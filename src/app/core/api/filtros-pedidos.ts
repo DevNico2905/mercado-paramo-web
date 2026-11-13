@@ -1,5 +1,5 @@
-import { EstadoPedido } from '../../../core/api/models';
-import { FiltrosPedidos } from '../../../core/api/pedidos-service';
+import { EstadoPedido } from './models';
+import { FiltrosPedidos } from './pedidos-service';
 
 export const ESTADOS: readonly { valor: EstadoPedido; etiqueta: string }[] = [
   { valor: 'PENDIENTE', etiqueta: 'Pendientes' },
