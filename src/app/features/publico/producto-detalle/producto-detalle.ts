@@ -3,12 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   linkedSignal,
   signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import {
@@ -103,6 +105,18 @@ export class ProductoDetalle {
     const carga = this.carga();
     return carga.estado === 'listo' ? carga.producto : null;
   });
+
+  constructor() {
+    const titulo = inject(Title);
+    effect(() => {
+      const producto = this.producto();
+      if (producto) {
+        titulo.setTitle(`${producto.nombre} · Mercado Páramo`);
+      } else if (this.carga().estado === 'no-disponible') {
+        titulo.setTitle('Producto no disponible · Mercado Páramo');
+      }
+    });
+  }
 
   /** Cantidad elegida; vuelve a 1 cuando cambia el producto. */
   protected readonly cantidad = linkedSignal({
