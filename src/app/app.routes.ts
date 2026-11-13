@@ -108,8 +108,8 @@ export const routes: Routes = [
           {
             path: 'pedidos',
             title: titulo('Todos los pedidos'),
-            data: { titulo: 'Todos los pedidos' },
-            loadComponent: provisional,
+            loadComponent: () =>
+              import('./features/admin/pedidos/pedidos').then((m) => m.AdminPedidos),
           },
           {
             path: 'impacto',
