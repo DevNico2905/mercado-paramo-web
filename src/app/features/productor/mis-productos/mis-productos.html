@@ -1,0 +1,182 @@
+<header class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="text-xs font-bold tracking-[0.18em] text-tierra-600 uppercase">Lo que vendes</p>
+    <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">Mis productos</h1>
+    @if (carga().estado === 'listo') {
+      <p class="mt-1 text-roca-900/80">
+        {{ visibles() }} {{ visibles() === 1 ? 'producto' : 'productos' }} en el catálogo
+      </p>
+    }
+  </div>
+
+  <div class="w-full sm:w-auto">
+    @if (verificado()) {
+      <a
+        routerLink="/productor/productos/nuevo"
+        class="flex min-h-13 items-center justify-center gap-2 rounded-xl bg-musgo-700 px-6 text-base font-semibold text-white transition hover:bg-musgo-900 active:scale-[0.98]"
+      >
+        <svg lucidePlus [size]="22" [strokeWidth]="2.5" aria-hidden="true"></svg>
+        Nuevo producto
+      </a>
+    } @else {
+      <button
+        type="button"
+        disabled
+        class="flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-roca-900/10 px-6 text-base font-semibold text-roca-900/70"
+        aria-describedby="nuevo-producto-motivo"
+      >
+        <svg lucidePlus [size]="22" [strokeWidth]="2.5" aria-hidden="true"></svg>
+        Nuevo producto
+      </button>
+      <p id="nuevo-producto-motivo" class="mt-1 text-sm text-roca-900/80 sm:max-w-64">
+        @if (estadoVerificacion() === 'RECHAZADO') {
+          Tu cuenta no fue aprobada; por eso no puedes publicar.
+        } @else {
+          Podrás publicar cuando la fundación apruebe tu cuenta.
+        }
+      </p>
+    }
+  </div>
+</header>
+
+<app-verificacion-banner class="mt-5" [estado]="estadoVerificacion()" />
+
+<section class="mt-6" [attr.aria-busy]="carga().estado === 'cargando'" aria-label="Tus productos">
+  @let c = carga();
+  @switch (c.estado) {
+    @case ('cargando') {
+      <p class="sr-only" role="status">Cargando tus productos…</p>
+      <ul class="flex flex-col gap-3" aria-hidden="true">
+        @for (esqueleto of esqueletos; track esqueleto) {
+          <li class="flex gap-4 rounded-2xl bg-white p-4 shadow-suave">
+            <app-skeleton class="size-20 shrink-0 rounded-xl" />
+            <div class="flex flex-1 flex-col gap-2">
+              <app-skeleton class="h-6 w-1/2" />
+              <app-skeleton class="h-5 w-1/3" />
+              <app-skeleton class="h-11 w-full rounded-xl" />
+            </div>
+          </li>
+        }
+      </ul>
+    }
+    @case ('error') {
+      <app-empty-state
+        emoji="🌧️"
+        titulo="No pudimos cargar tus productos"
+        mensaje="Puede ser la conexión. Revisa tu señal e inténtalo otra vez."
+      >
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-musgo-700 px-5 font-semibold text-white hover:bg-musgo-900"
+          (click)="cargar()"
+        >
+          <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+          Intentar de nuevo
+        </button>
+      </app-empty-state>
+    }
+    @case ('listo') {
+      @if (c.productos.length === 0) {
+        <app-empty-state
+          emoji="🌱"
+          titulo="Aún no has publicado productos"
+          [mensaje]="
+            verificado()
+              ? 'Publica lo que cosechas y los compradores de Guasca podrán pedírtelo.'
+              : 'Cuando la fundación apruebe tu cuenta, aquí verás lo que publiques.'
+          "
+        >
+          @if (verificado()) {
+            <a
+              routerLink="/productor/productos/nuevo"
+              class="inline-flex min-h-12 items-center gap-2 rounded-xl bg-musgo-700 px-6 font-semibold text-white hover:bg-musgo-900"
+            >
+              <svg lucidePlus [size]="20" aria-hidden="true"></svg>
+              Publicar mi primer producto
+            </a>
+          }
+        </app-empty-state>
+      } @else {
+        <ul class="grid gap-3 md:grid-cols-2">
+          @for (producto of c.productos; track producto.id) {
+            <li
+              class="flex flex-col rounded-2xl p-4 motion-safe:animate-aparecer"
+              [class]="
+                producto.activo
+                  ? 'bg-white shadow-suave'
+                  : 'bg-white/60 ring-1 ring-musgo-900/10 ring-inset'
+              "
+              [style.animation-delay.ms]="($index < 6 ? $index : 6) * 50"
+            >
+              <div class="flex gap-4" [class.opacity-60]="!producto.activo">
+                <div
+                  class="size-20 shrink-0 overflow-hidden rounded-xl"
+                  [class.grayscale]="!producto.activo"
+                >
+                  <app-category-art
+                    class="size-full"
+                    tamano="miniatura"
+                    [categoria]="producto.categoriaNombre"
+                  />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-xl leading-tight font-semibold break-words">
+                    {{ producto.nombre }}
+                  </h2>
+                  <p class="mt-1">
+                    <span class="font-display text-lg font-semibold text-musgo-900">{{
+                      producto.precio | cop
+                    }}</span>
+                    <span class="text-roca-900/75"> / {{ producto.unidad }}</span>
+                  </p>
+                  <p class="mt-1 text-sm">
+                    @if (producto.stock < 1) {
+                      <span class="font-semibold text-peligro-600">Agotado</span>
+                    } @else {
+                      <span
+                        [class]="producto.stock <= stockBajo ? 'font-semibold text-tierra-600' : ''"
+                      >
+                        Quedan {{ producto.stock }}
+                      </span>
+                    }
+                    · {{ producto.categoriaNombre }}
+                  </p>
+                </div>
+              </div>
+
+              @if (producto.activo) {
+                <div class="mt-4 grid grid-cols-2 gap-2">
+                  <a
+                    [routerLink]="['/productor/productos', producto.id, 'editar']"
+                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-musgo-100 px-3 font-semibold text-musgo-900 hover:bg-musgo-700 hover:text-white"
+                    [attr.aria-label]="'Editar ' + producto.nombre"
+                  >
+                    <svg lucidePencil [size]="18" aria-hidden="true"></svg>
+                    Editar
+                  </a>
+                  <button
+                    type="button"
+                    class="flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 font-semibold text-peligro-600 ring-1 ring-peligro-600/40 ring-inset hover:bg-peligro-600/10 disabled:opacity-70"
+                    [attr.aria-label]="'Ocultar ' + producto.nombre + ' del catálogo'"
+                    [disabled]="ocultando() === producto.id"
+                    (click)="ocultar(producto)"
+                  >
+                    <svg lucideEyeOff [size]="18" aria-hidden="true"></svg>
+                    {{ ocultando() === producto.id ? 'Ocultando…' : 'Ocultar' }}
+                  </button>
+                </div>
+              } @else {
+                <p
+                  class="mt-3 flex items-center gap-2 self-start rounded-full bg-roca-900/10 px-3 py-1 text-sm font-semibold text-roca-900"
+                >
+                  <svg lucideEyeOff [size]="16" aria-hidden="true"></svg>
+                  Oculto del catálogo
+                </p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
