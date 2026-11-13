@@ -77,6 +77,7 @@ describe('Carrito', () => {
   }
 
   beforeEach(() => {
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
     localStorage.clear();
     TestBed.configureTestingModule({
       providers: [
