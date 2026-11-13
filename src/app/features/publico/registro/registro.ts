@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { switchMap } from 'rxjs';
 import { aplicarErroresApi } from '../../../core/api/api-error';
 import { RegistroRequest } from '../../../core/api/models';
@@ -33,17 +35,13 @@ const MENSAJES: Record<Campo, MensajesDeError> = {
 
 @Component({
   selector: 'app-registro',
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    LucideArrowLeft,
-    LucideCircleAlert,
-    LucideLoaderCircle,
-  ],
+  imports: [ReactiveFormsModule, RouterLink, LucideDynamicIcon],
   templateUrl: './registro.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Registro {
+  protected readonly iconos = iconos({ LucideArrowLeft, LucideCircleAlert, LucideLoaderCircle });
+
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -125,11 +123,7 @@ export class Registro {
       )
       .subscribe({
         next: (perfil) => {
-          this.toast.exito(
-            rol === 'PRODUCTOR'
-              ? '¡Bienvenido! La fundación verificará tu cuenta antes de que puedas publicar.'
-              : `¡Bienvenido, ${nombre.trim().split(/\s+/)[0]}! Tu cuenta está lista.`,
-          );
+          this.toast.exito(`¡Bienvenido/a, ${nombre.trim()}!`);
           void this.router.navigateByUrl(
             redirectSeguro(this.redirect()) ?? inicioPorRol(perfil.rol),
           );

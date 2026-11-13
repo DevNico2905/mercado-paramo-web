@@ -63,7 +63,7 @@
         class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-musgo-700 hover:text-musgo-900"
         (click)="volverAlPaso1()"
       >
-        <svg lucideArrowLeft [size]="18" aria-hidden="true"></svg>
+        <svg [lucideIcon]="iconos.LucideArrowLeft" [size]="18" aria-hidden="true"></svg>
         Cambiar tipo de cuenta
       </button>
 
@@ -89,7 +89,12 @@
               role="alert"
               class="flex items-start gap-2 rounded-xl bg-peligro-600/10 p-3 text-sm font-semibold text-peligro-600"
             >
-              <svg lucideCircleAlert class="mt-0.5 shrink-0" [size]="18" aria-hidden="true"></svg>
+              <svg
+                [lucideIcon]="iconos.LucideCircleAlert"
+                class="mt-0.5 shrink-0"
+                [size]="18"
+                aria-hidden="true"
+              ></svg>
               {{ mensaje }}
             </p>
           }
@@ -260,7 +265,7 @@
           >
             @if (enviando()) {
               <svg
-                lucideLoaderCircle
+                [lucideIcon]="iconos.LucideLoaderCircle"
                 class="motion-safe:animate-spin"
                 [size]="20"
                 aria-hidden="true"

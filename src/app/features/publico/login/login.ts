@@ -2,10 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideCircleAlert, LucideLoaderCircle } from '@lucide/angular';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideCircleAlert, LucideLoaderCircle } from '@lucide/icons';
+import { iconos } from '../../../shared/iconos';
 import { aplicarErroresApi } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth-service';
 import { inicioPorRol } from '../../../core/auth/inicio-por-rol';
+import { primerNombre } from '../../../core/auth/rol';
+import { ToastService } from '../../../core/ui/toast-service';
 import { MensajesDeError, mensajeDeError, redirectSeguro } from '../../../shared/forms/errores';
 
 type Campo = 'email' | 'password';
@@ -22,13 +26,16 @@ const MENSAJES: Record<Campo, MensajesDeError> = {
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, LucideCircleAlert, LucideLoaderCircle],
+  imports: [ReactiveFormsModule, RouterLink, LucideDynamicIcon],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
+  protected readonly iconos = iconos({ LucideCircleAlert, LucideLoaderCircle });
+
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   /** Query param `?redirect=`: ruta a la que se vuelve después de iniciar sesión. */
   readonly redirect = input<string>();
@@ -57,6 +64,7 @@ export class Login {
     this.enviando.set(true);
     this.auth.login(this.formulario.getRawValue()).subscribe({
       next: (perfil) => {
+        this.toast.exito(`¡Hola de nuevo, ${primerNombre(perfil.nombre)}!`);
         void this.router.navigateByUrl(redirectSeguro(this.redirect()) ?? inicioPorRol(perfil.rol));
       },
       error: (error: unknown) => {
