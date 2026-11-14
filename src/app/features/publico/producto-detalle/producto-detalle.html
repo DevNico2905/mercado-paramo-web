@@ -137,7 +137,7 @@
               <app-quantity-stepper
                 class="mt-1"
                 [cantidad]="cantidad()"
-                [maximo]="p.stock"
+                [maximo]="cantidadMaximaDe(p.stock)"
                 (cambio)="cantidad.set($event)"
               />
             </div>

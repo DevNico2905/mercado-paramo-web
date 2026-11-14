@@ -21,6 +21,7 @@ const MENSAJES: Record<Campo, MensajesDeError> = {
   },
   password: {
     required: 'Escribe tu contraseña.',
+    maxlength: 'La contraseña puede tener hasta 72 caracteres.',
   },
 };
 
@@ -45,7 +46,7 @@ export class Login {
 
   protected readonly formulario = inject(FormBuilder).nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.maxLength(72)]],
   });
 
   protected errorDe(campo: Campo): string | null {

@@ -4,6 +4,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import localeEsCo from '@angular/common/locales/es-CO';
 import { LOCALE_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup, FormGroupDirective } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { EstadoVerificacion, Pedido, Producto } from '../../core/api/models';
@@ -199,6 +201,19 @@ describe('pantallas del productor', () => {
       return fixture;
     }
 
+    const formulario = (fixture: ComponentFixture<unknown>): FormGroup =>
+      fixture.debugElement.query(By.directive(FormGroupDirective)).injector.get(FormGroupDirective)
+        .form;
+
+    /** Formulario sin renderizar la plantilla: solo los validators del FormControl. */
+    function sinPlantilla(): FormGroup {
+      const instancia = TestBed.createComponent(ProductoForm).componentInstance as unknown as {
+        formulario: FormGroup;
+      };
+      backend.expectOne(api('/api/categorias')).flush(categorias);
+      return instancia.formulario;
+    }
+
     function escribir(fixture: ComponentFixture<unknown>, selector: string, valor: string) {
       const campo = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(
         selector,
@@ -269,6 +284,53 @@ describe('pantallas del productor', () => {
 
       escribir(fixture, '#producto-precio', '9500.5');
       expect(texto(fixture)).toContain('Escribe el precio en pesos, sin puntos ni centavos.');
+      backend.expectNone(api('/api/productor/productos'));
+    });
+
+    it('stock mayor a 100.000 es inválido, muestra el mensaje y no se envía', () => {
+      const control = sinPlantilla().controls['stock'];
+      control.setValue(100001);
+      expect(control.errors?.['max']).toBeTruthy();
+
+      const fixture = abrir();
+      escribir(fixture, '#producto-stock', '100001');
+      botones(fixture, 'Publicar producto')[0].click();
+      fixture.detectChanges();
+
+      const stock = formulario(fixture).controls['stock'];
+      expect(stock.invalid).toBe(true);
+      expect(stock.errors?.['max']).toBeTruthy();
+      expect(texto(fixture)).toContain('La cantidad puede ser hasta 100.000.');
+      backend.expectNone(api('/api/productor/productos'));
+
+      escribir(fixture, '#producto-stock', '100000');
+      expect(stock.valid).toBe(true);
+      expect(
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('#producto-stock')
+          ?.getAttribute('max'),
+      ).toBe('100000');
+    });
+
+    it('precio mayor a 9.999.999.999 es inválido y muestra el mensaje', () => {
+      const control = sinPlantilla().controls['precio'];
+      control.setValue(10000000000);
+      expect(control.errors?.['max']).toBeTruthy();
+
+      const fixture = abrir();
+      escribir(fixture, '#producto-precio', '10000000000');
+      botones(fixture, 'Publicar producto')[0].click();
+      fixture.detectChanges();
+
+      const precio = formulario(fixture).controls['precio'];
+      expect(precio.invalid).toBe(true);
+      expect(precio.errors?.['max']).toBeTruthy();
+      expect(texto(fixture)).toContain('El precio puede ser hasta $9.999.999.999.');
+      expect(
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('#producto-precio')
+          ?.getAttribute('max'),
+      ).toBe('9999999999');
       backend.expectNone(api('/api/productor/productos'));
     });
 

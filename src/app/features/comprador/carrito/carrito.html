@@ -138,7 +138,7 @@
             <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
               <app-quantity-stepper
                 [cantidad]="item.cantidad"
-                [maximo]="item.stock"
+                [maximo]="cantidadMaximaDe(item.stock)"
                 [etiqueta]="'Cantidad de ' + item.nombre"
                 (cambio)="cart.cambiarCantidad(item.productoId, $event)"
               />
@@ -155,6 +155,11 @@
               <p class="mt-1 text-xs font-semibold text-tierra-600">
                 Es todo lo que hay disponible: {{ item.stock }}
                 {{ item.unidad | unidad: item.stock }}.
+              </p>
+            } @else if (item.cantidad >= cantidadMaxima) {
+              <p class="mt-1 text-xs font-semibold text-tierra-600">
+                Puedes pedir hasta {{ cantidadMaxima }}
+                {{ item.unidad | unidad: cantidadMaxima }} por pedido.
               </p>
             }
           </div>
