@@ -41,6 +41,10 @@ import { MensajesDeError, mensajeDeError } from '../../../shared/forms/errores';
 /** Stock de muestra para la vista previa mientras no se ha escrito la cantidad. */
 const STOCK_SIN_DEFINIR = 99;
 
+/** Límites de la API (MP-18e): deben coincidir con el backend. */
+const PRECIO_MAXIMO = 9_999_999_999;
+const STOCK_MAXIMO = 100_000;
+
 export const UNIDADES_SUGERIDAS = ['libra', 'kilo', 'unidad', 'litro', 'docena', 'atado'];
 
 type Campo = 'nombre' | 'unidad' | 'precio' | 'stock' | 'categoriaId';
@@ -58,11 +62,13 @@ const MENSAJES: Record<Campo, MensajesDeError> = {
     required: 'Escribe el precio.',
     entero: 'Escribe el precio en pesos, sin puntos ni centavos.',
     min: 'El precio debe ser mayor que cero.',
+    max: 'El precio puede ser hasta $9.999.999.999.',
   },
   stock: {
     required: 'Escribe cuántos tienes.',
     entero: 'Escribe un número entero, sin puntos.',
     min: 'La cantidad no puede ser negativa.',
+    max: 'La cantidad puede ser hasta 100.000.',
   },
   categoriaId: { required: 'Elige una categoría.' },
 };
@@ -93,6 +99,8 @@ export class ProductoForm implements OnInit {
   readonly id = input<string>();
 
   protected readonly unidades = UNIDADES_SUGERIDAS;
+  protected readonly precioMaximo = PRECIO_MAXIMO;
+  protected readonly stockMaximo = STOCK_MAXIMO;
   protected readonly esEdicion = computed(() => this.id() !== undefined);
 
   protected readonly categorias = toSignal(
@@ -120,8 +128,18 @@ export class ProductoForm implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(20)],
     }),
-    precio: new FormControl<number | null>(null, [Validators.required, entero, Validators.min(1)]),
-    stock: new FormControl<number | null>(null, [Validators.required, entero, Validators.min(0)]),
+    precio: new FormControl<number | null>(null, [
+      Validators.required,
+      entero,
+      Validators.min(1),
+      Validators.max(PRECIO_MAXIMO),
+    ]),
+    stock: new FormControl<number | null>(null, [
+      Validators.required,
+      entero,
+      Validators.min(0),
+      Validators.max(STOCK_MAXIMO),
+    ]),
     categoriaId: new FormControl<number | null>(null, [Validators.required]),
   });
 

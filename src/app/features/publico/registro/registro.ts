@@ -19,19 +19,34 @@ type RolRegistro = 'COMPRADOR' | 'PRODUCTOR';
 type Campo = 'nombre' | 'email' | 'telefono' | 'password' | 'vereda' | 'descripcion';
 
 const MENSAJES: Record<Campo, MensajesDeError> = {
-  nombre: { required: 'Escribe tu nombre.' },
+  nombre: {
+    required: 'Escribe tu nombre.',
+    maxlength: 'El nombre puede tener hasta 100 letras.',
+  },
   email: {
     required: 'Escribe tu correo.',
     email: 'Escribe un correo válido, como nombre@correo.com.',
+    maxlength: 'El correo puede tener hasta 254 caracteres.',
   },
-  telefono: { required: 'Escribe tu teléfono.' },
+  telefono: {
+    required: 'Escribe tu teléfono.',
+    maxlength: 'El teléfono puede tener hasta 20 caracteres.',
+  },
   password: {
     required: 'Crea una contraseña.',
     minlength: 'La contraseña debe tener al menos 8 caracteres.',
+    maxlength: 'La contraseña puede tener hasta 72 caracteres.',
   },
-  vereda: { required: 'Escribe la vereda donde produces.' },
-  descripcion: {},
+  vereda: {
+    required: 'Escribe la vereda donde produces.',
+    maxlength: 'La vereda puede tener hasta 100 letras.',
+  },
+  descripcion: { maxlength: 'La descripción puede tener hasta 500 caracteres.' },
 };
+
+/** Límites de la API (MP-18e): deben coincidir con el backend. */
+const VEREDA_MAXIMA = 100;
+const DESCRIPCION_MAXIMA = 500;
 
 @Component({
   selector: 'app-registro',
@@ -55,13 +70,19 @@ export class Registro {
   protected readonly errorGeneral = signal<string | null>(null);
 
   protected readonly formulario = inject(FormBuilder).nonNullable.group({
-    nombre: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
-    telefono: ['', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    vereda: [''],
-    descripcion: [''],
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
+    telefono: ['', [Validators.required, Validators.maxLength(20)]],
+    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+    vereda: ['', [Validators.maxLength(VEREDA_MAXIMA)]],
+    descripcion: ['', [Validators.maxLength(DESCRIPCION_MAXIMA)]],
   });
+
+  protected readonly descripcionMaxima = DESCRIPCION_MAXIMA;
+  private readonly descripcion = toSignal(this.formulario.controls.descripcion.valueChanges, {
+    initialValue: '',
+  });
+  protected readonly largoDescripcion = computed(() => this.descripcion().length);
 
   private readonly password = toSignal(this.formulario.controls.password.valueChanges, {
     initialValue: '',
@@ -70,7 +91,11 @@ export class Registro {
 
   protected elegirRol(rol: RolRegistro): void {
     const { vereda } = this.formulario.controls;
-    vereda.setValidators(rol === 'PRODUCTOR' ? [Validators.required] : []);
+    vereda.setValidators(
+      rol === 'PRODUCTOR'
+        ? [Validators.required, Validators.maxLength(VEREDA_MAXIMA)]
+        : [Validators.maxLength(VEREDA_MAXIMA)],
+    );
     vereda.updateValueAndValidity();
     this.errorGeneral.set(null);
     this.rol.set(rol);

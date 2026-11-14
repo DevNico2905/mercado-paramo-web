@@ -4,6 +4,14 @@ import { PARTICIPACION_PRODUCTOR } from '../impacto';
 
 const CLAVE = 'mp_carrito';
 
+/** Tope de unidades de un mismo producto por pedido, aunque haya más stock (límite de la API). */
+export const CANTIDAD_MAXIMA_POR_PRODUCTO = 1000;
+
+/** Cuántas unidades de un producto se pueden pedir: su stock, sin pasar del tope por pedido. */
+export function cantidadMaximaDe(stock: number): number {
+  return Math.min(stock, CANTIDAD_MAXIMA_POR_PRODUCTO);
+}
+
 export interface ItemCarrito {
   productoId: number;
   nombre: string;
@@ -23,7 +31,8 @@ export interface Carrito {
 
 /**
  * - `agregado`: el producto quedó en el carrito con la cantidad pedida.
- * - `tope`: quedó en el carrito, pero la cantidad se limitó al stock disponible.
+ * - `tope`: quedó en el carrito, pero la cantidad se limitó al stock disponible o al tope de
+ *   `CANTIDAD_MAXIMA_POR_PRODUCTO`.
  * - `sin-stock`: no se agregó porque no hay stock o ya estaba el máximo.
  * - `otro-productor`: no se agregó porque el carrito es de otro productor.
  */
@@ -77,7 +86,7 @@ function leerGuardado(): Carrito {
 }
 
 function limitar(cantidad: number, stock: number): number {
-  return Math.max(1, Math.min(Math.floor(cantidad), stock));
+  return Math.max(1, Math.min(Math.floor(cantidad), stock, CANTIDAD_MAXIMA_POR_PRODUCTO));
 }
 
 @Injectable({ providedIn: 'root' })
@@ -150,7 +159,7 @@ export class CartService {
     return this.agregar(producto, cantidad);
   }
 
-  /** Cambia la cantidad de un ítem, entre 1 y su stock. */
+  /** Cambia la cantidad de un ítem, entre 1 y su stock (sin pasar del tope por pedido). */
   cambiarCantidad(productoId: number, cantidad: number): void {
     this.actualizarItems((items) =>
       items.map((item) =>

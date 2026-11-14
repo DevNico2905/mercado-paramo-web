@@ -24,7 +24,7 @@ import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { CatalogoService } from '../../../core/api/catalogo-service';
 import { Producto } from '../../../core/api/models';
 import { AgregarAlCarrito } from '../../../core/cart/agregar-al-carrito';
-import { CartService } from '../../../core/cart/cart-service';
+import { CartService, cantidadMaximaDe } from '../../../core/cart/cart-service';
 import { CategoryArt } from '../../../shared/components/category-art/category-art';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ImpactMeter } from '../../../shared/components/impact-meter/impact-meter';
@@ -123,6 +123,8 @@ export class ProductoDetalle {
     source: () => this.producto()?.id,
     computation: () => 1,
   });
+
+  protected readonly cantidadMaximaDe = cantidadMaximaDe;
 
   protected readonly agotado = computed(() => (this.producto()?.stock ?? 0) < 1);
   protected readonly stockBajo = computed(

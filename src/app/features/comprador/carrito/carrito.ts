@@ -12,7 +12,11 @@ import { CatalogoService } from '../../../core/api/catalogo-service';
 import { Pedido } from '../../../core/api/models';
 import { PedidosService } from '../../../core/api/pedidos-service';
 import { AuthService } from '../../../core/auth/auth-service';
-import { CartService } from '../../../core/cart/cart-service';
+import {
+  CANTIDAD_MAXIMA_POR_PRODUCTO,
+  CartService,
+  cantidadMaximaDe,
+} from '../../../core/cart/cart-service';
 import { ToastService } from '../../../core/ui/toast-service';
 import { CategoryArt } from '../../../shared/components/category-art/category-art';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
@@ -61,6 +65,8 @@ export class Carrito {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   protected readonly cart = inject(CartService);
+  protected readonly cantidadMaximaDe = cantidadMaximaDe;
+  protected readonly cantidadMaxima = CANTIDAD_MAXIMA_POR_PRODUCTO;
 
   protected readonly direccionMaxima = DIRECCION_MAXIMA;
   protected readonly enviando = signal(false);

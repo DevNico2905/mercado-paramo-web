@@ -107,6 +107,7 @@
               id="registro-nombre"
               type="text"
               formControlName="nombre"
+              maxlength="100"
               autocomplete="name"
               class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
               [class]="errorDe('nombre') ? 'border-peligro-600' : 'border-musgo-900/50'"
@@ -128,6 +129,7 @@
               id="registro-email"
               type="email"
               formControlName="email"
+              maxlength="254"
               autocomplete="email"
               inputmode="email"
               class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
@@ -150,6 +152,7 @@
               id="registro-telefono"
               type="tel"
               formControlName="telefono"
+              maxlength="20"
               autocomplete="tel"
               inputmode="tel"
               class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
@@ -172,6 +175,7 @@
               id="registro-password"
               type="password"
               formControlName="password"
+              maxlength="72"
               autocomplete="new-password"
               class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
               [class]="errorDe('password') ? 'border-peligro-600' : 'border-musgo-900/50'"
@@ -219,6 +223,7 @@
                 id="registro-vereda"
                 type="text"
                 formControlName="vereda"
+                maxlength="100"
                 class="mt-1 block min-h-12 w-full rounded-xl border bg-white px-4 text-base"
                 [class]="errorDe('vereda') ? 'border-peligro-600' : 'border-musgo-900/50'"
                 [attr.aria-invalid]="errorDe('vereda') ? 'true' : null"
@@ -239,14 +244,23 @@
               <textarea
                 id="registro-descripcion"
                 formControlName="descripcion"
+                [maxlength]="descripcionMaxima"
                 rows="3"
                 class="mt-1 block w-full rounded-xl border bg-white px-4 py-3 text-base"
                 [class]="errorDe('descripcion') ? 'border-peligro-600' : 'border-musgo-900/50'"
                 [attr.aria-invalid]="errorDe('descripcion') ? 'true' : null"
                 [attr.aria-describedby]="
-                  errorDe('descripcion') ? 'registro-descripcion-error' : null
+                  errorDe('descripcion')
+                    ? 'registro-descripcion-contador registro-descripcion-error'
+                    : 'registro-descripcion-contador'
                 "
               ></textarea>
+              <p
+                id="registro-descripcion-contador"
+                class="mt-1 text-right text-sm text-roca-900/80"
+              >
+                {{ largoDescripcion() }}/{{ descripcionMaxima }}
+              </p>
               @if (errorDe('descripcion'); as mensaje) {
                 <p
                   id="registro-descripcion-error"

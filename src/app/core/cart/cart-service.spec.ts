@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Producto } from '../api/models';
-import { CartService } from './cart-service';
+import { CANTIDAD_MAXIMA_POR_PRODUCTO, CartService } from './cart-service';
 
 function producto(cambios: Partial<Producto> = {}): Producto {
   return {
@@ -69,6 +69,15 @@ describe('CartService', () => {
     expect(cart.cantidadDe(1)).toBe(1);
     cart.cambiarCantidad(1, 99);
     expect(cart.cantidadDe(1)).toBe(3);
+  });
+
+  it('no pasa de CANTIDAD_MAXIMA_POR_PRODUCTO aunque haya más stock', () => {
+    expect(CANTIDAD_MAXIMA_POR_PRODUCTO).toBe(1000);
+    expect(cart.agregar(producto({ stock: 5000 }), 1500)).toBe('tope');
+    expect(cart.cantidadDe(1)).toBe(1000);
+
+    cart.cambiarCantidad(1, 4000);
+    expect(cart.cantidadDe(1)).toBe(1000);
   });
 
   it('no agrega productos agotados', () => {
